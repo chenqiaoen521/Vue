@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>受理界面</title>
+</head>
+<link rel="stylesheet" href="caseJs/jquery-easyui-1.5.3/themes/icon.css">
+<link rel="stylesheet" href="caseJs/jquery-easyui-1.5.3/themes/material/easyui.css">
+<script type="text/javascript" src="caseJs/echarts.js"></script>
+<script type="text/javascript" src="caseJs/jquery-1.10.1.min.js"></script>
+<script type="text/javascript" src="caseJs/jquery-easyui-1.5.3/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="caseJs/jquery-easyui-1.5.3/locale/easyui-lang-zh_CN.js"></script>
+<body onload="init()">
+
+  <div class="caseFactStory">
+    <div class="header_div">
+      <span class="header_title">受理界面</span>
+      <div class="header_right">
+        <button class="backBtn" onclick="statisticAnalysisType()">返回</button>
+      </div>
+    </div>
+    <div class="echarts_div">
+
+      <div class="row">
+
+        <div class="tr">
+          <div class="trHead"><span>受理移送审查起诉</span></div>
+          <div class="echart_containter">
+            <div id="myChartsOne"></div>
+          </div>
+        </div>
+        <div class="tr">
+          <div class="trHead"><span>全省偏离图</span></div>
+          <div class="echart_containter">
+            <div id="myChartsTwo" style="width: 100%;height: 100%"></div>
+          </div>
+        </div>
+        <div class="tr">
+          <div class="trHead"><span>刑事犯罪占比统计</span></div>
+          <div class="echart_containter">
+            <div id="myCharts_2" style="width: 100%;height: 100%" ></div>
+          </div>
+        </div>
+
+      </div>
+
+
+      <div class="row">
+        <div class="tr">
+          <div class="trHead"><span>全省趋势图</span></div>
+          <div class="echart_containter">
+            <div class="blueBtn">
+              <button onclick="lineChartsYear()">年</button>
+              <button onclick="lineChartsMonth()"  class="active">月</button>
+            </div>
+            <div id="myCharts_3"></div>
+          </div>
+        </div>
+
+        <div class="tr">
+          <div class="trHead"><span>职务犯罪占比统计</span></div>
+          <div class="echart_containter">
+            <div id="myCharts_4" style="width: 100%;height: 100%" ></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+<script>
+  var dataIndex = 0
+  var barDataOneFunction = {
+    formatter1: function (e) {
+      var str = ''
+      str = e.data + '件'
+      return str
+    },
+    formatter2: function (e) {
+      var str = ''
+      str = e.data + '人'
+      return str
+    },
+    xAxisFormatter: function (value) {
+      return value.split('').join('\n')
+    }
+  }
+  var barDataFunction = {
+    xAxisFormatter: function (value) {
+      return value.split('').join('\n')
+    }
+  }
+  var rollPieData = {
+    radius : [70, 55],
+    seriesData: [
+      {
+        title: '一审判决生效',
+        center : ['14%', '25%'],
+        data : [
+          {name:'其他', value:46},
+          {name:'一审判决生效', value:54}
+        ]
+      },
+      {
+        title: '二审判决生效',
+        center : ['38%', '25%'],
+        data : [
+          {name:'其他', value:79},
+          {name:'二审判决生效', value:21}
+        ]
+      },
+      {
+        title: '生效裁判合计',
+        center : ['62%', '25%'],
+        data : [
+          {name:'其他', value:11},
+          {name:'生效裁判合计', value:89}
+        ]
+      },
+      {
+        title: '有罪生效裁判合计',
+        center : ['87%', '25%'],
+        data : [
+          {name:'其他', value:46},
+          {name:'有罪生效裁判合计', value:54}
+        ]
+      },
+      {
+        title: '无罪生效裁判合计',
+        center : ['14%', '75%'],
+        data : [
+          {name:'其他', value:79},
+          {name:'无罪生效裁判合计', value:21}
+        ]
+      },
+      {
+        title: '不负刑事责任生效裁判合计',
+        center : ['38%', '75%'],
+        data : [
+          {name:'其他', value:11},
+          {name:'不负刑事责任生效裁判合计', value:89}
+        ]
+      },
+      {
+        title: '有罪生效裁判合计',
+        center : ['62%', '75%'],
+        data : [
+          {name:'其他', value:11},
+          {name:'有罪生效裁判合计', value:89}
+        ]
+      },
+      {
+        title: '无罪生效裁判合计',
+        center : ['87%', '75%'],
+        data : [
+          {name:'其他', value:11},
+          {name:'无罪生效裁判合计', value:89}
+        ]
+      }
+    ]
+  }
+  var barDataOne = {
+    legendData: ['件数', '人数'],
+    gardTop: '0%',
+    gridBottom: '0%',
+    seriesColorOne: '#26739F',
+    yAxisData: ['危险驾驶罪','交通肇事罪','盗窃罪','抢劫罪','抢夺罪','故意杀人罪','故意伤害罪','毒品类犯罪','其他'],
+    seriesData: [
+      {
+        name: '件数',
+        barGap:'40%',
+        barCategoryGap:'50%',
+        data: [31, 9, 11, 33, 44, 55, 66, 77, 44]
+      },
+      {
+        name: '人数',
+        type: 'bar',
+        barGap:'40%',
+        barCategoryGap:'50%',
+        data: [4, 2, 5, 15, 11, 50, 30, 33, 20]
+      }
+    ],
+    yaxisPosition: 'right',
+    lengedShow: false
+  }
+  var barData = {
+    min:0,
+    max: 100,
+    xAxisData: ['甘孜州','凉山州','阿坝州','成都市','德阳市','广元市','南充市','眉山市','乐山市','攀枝花','巴中市','广安市','宜宾市', '内江市', '泸州市', '绵阳市', '雅安市','资阳市','遂宁市'],
+    legendData: ['分类罪名占比'], //
+    seriesColorOne: '#26739F',
+    seriesData: [
+      {
+        name: '分类罪名占比',
+        data: [25, 14, 13, 25, 14, 13, 25, 14, 13, 35, 14, 13, 25, 14, 13,25, 14, 13, 25]
+      }
+    ],
+    yaxisPosition: 'right',
+    lengedShow: false
+  }
+  var fullPieData = {
+    legendData: ['故意杀人罪','危险驾驶罪', '交通肇事罪', '抢劫罪', '盗窃罪','抢夺罪'],
+    lengedShow: false, // 是否显示图例
+    radius: ['30%', '50%'],
+    seriesDataOne: [
+      {value:221, name:'交通肇事罪'},
+      {value:99, name:'危险驾驶罪'},
+      {value:158, name:'抢劫罪'},
+      {value:25, name:'故意杀人罪'},
+      {value:99, name:'盗窃罪'},
+      {value:99, name:'抢夺罪'}
+    ]
+  }
+  var fullPieData2 = {
+    legendData: ['贪污贿赂罪','渎职罪'],
+    lengedShow: false, // 是否显示图例
+    radius: ['30%', '50%'],
+    seriesDataOne: [
+      {value:335, name:'贪污贿赂罪'},
+      {value:221, name:'渎职罪'}
+    ]
+  }
+  var doublePieData = {
+    seriesName: '延长审查起诉期限情况',
+    radiousInner: [0, 60],
+    radiousOuter: [90, 110],
+    dataOuter: [
+      {value:335, name:'一次延长审查起诉期限件数'},
+      {value:679, name:'二次延长审查起诉期限件数'},
+      {value:1548, name:'三次延长审查起诉期限件数'}
+    ],
+    dataInner: [
+      {value:335, name:'一次'},
+      {value:679, name:'二次'},
+    ]
+  }
+  var lineChartsData = {
+    xAxisData: ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'],
+    lengedData: ['危险驾驶罪','交通肇事罪','盗窃罪','抢劫罪','抢夺罪','故意杀人罪','故意伤害罪','毒品类犯罪','其他'],
+    lengedShow: true,
+    yAxisRightShow: true,
+    seriesData: [
+      {
+        name:'危险驾驶罪',
+        data:[55, 20, 30, 10, 20, 30, 30, 10, 40, 30, 60, 20]
+      },
+      {
+        name:'交通肇事罪',
+        data:[5, 15, 25, 35, 5, 25, 55, 40, 5, 25, 45, 5]
+      },
+      {
+        name:'盗窃罪',
+        data:[11, 13, 19, 33, 44, 54, 56, 34, 10, 32, 7, 22]
+      },
+      {
+        name:'抢劫罪',
+        data:[12, 12, 22, 33, 11, 22, 33, 33, 22, 11, 11, 22]
+      },
+      {
+        name:'抢夺罪',
+        data:[5, 11, 5, 22, 5, 33, 4, 11, 1, 22, 33, 11]
+      },
+      {
+        name:'故意杀人罪',
+        data:[6, 10, 58, 35, 6, 54, 45, 34, 79, 76, 55, 77]
+      },
+      {
+        name:'故意伤害罪',
+        data:[7, 9, 11, 33, 44, 44, 22, 33, 44, 22, 9, 44]
+      },
+      {
+        name:'毒品类犯罪',
+        data:[8, 10, 55, 21, 33, 11, 6, 11, 1, 22, 7, 22]
+      },
+      {
+        name:'其他',
+        data:[69, 59, 58, 40, 90, 54, 47, 34, 45, 56, 55, 22]
+      }
+    ]
+  }
+  function init(){
+    var event = new CustomEvent('acceptInterfaceOnload', {detail: {data: 'init'}})
+    window.parent.parent.window.dispatchEvent(event)
+  }
+  function setNode(data) {
+    dataIndex = data.index
+    loadBar(data.data.barDataOne, 'myChartsOne', barDataOneFunction);
+    barPLT(data.data.barData, 'myChartsTwo', barDataOneFunction);
+    fullPie(data.data.fullPieData, 'myCharts_2');
+    lineCharts(data.data.lineChartsData, 'myCharts_3');
+    fullPie(data.data.fullPieData2, 'myCharts_4');
+  }
+  $('.blueBtn>button').on('click',function(){
+    $(this).eq(0).parent().eq(0).children('button').removeClass('active')
+    $(this).addClass('active')
+  })
+  // 年份折线图
+  function lineChartsYear(){
+    lineChartsData.xAxisData = ['2015', '2016', '2017']
+    lineChartsData.seriesData = [
+      {
+        name:'危险驾驶罪',
+        data:[1550, 2200, 300]
+      },
+      {
+        name:'交通肇事罪',
+        data:[50, 150, 250]
+      },
+      {
+        name:'盗窃罪',
+        data:[110, 130, 190]
+      },
+      {
+        name:'抢劫罪',
+        data:[120, 120, 220]
+      },
+      {
+        name:'抢夺罪',
+        data:[50, 101, 50]
+      },
+      {
+        name:'故意杀人罪',
+        data:[60, 100, 580]
+      },
+      {
+        name:'故意伤害罪',
+        data:[70, 90, 110]
+      },
+      {
+        name:'毒品类犯罪',
+        data:[80, 100, 55]
+      },
+      {
+        name:'其他',
+        data:[609, 509, 508]
+      }
+    ]
+    lineCharts(lineChartsData, 'myCharts_3');
+  }
+  // 月份折线图
+  function lineChartsMonth(){
+    lineChartsData.xAxisData = ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月']
+    lineChartsData.seriesData = [
+      {
+        name:'危险驾驶罪',
+        data:[55, 20, 30, 10, 20, 30, 30, 10, 40, 30, 60, 20]
+      },
+      {
+        name:'交通肇事罪',
+        data:[5, 15, 25, 35, 5, 25, 55, 40, 5, 25, 45, 5]
+      },
+      {
+        name:'盗窃罪',
+        data:[11, 13, 19, 33, 44, 54, 56, 34, 10, 32, 7, 22]
+      },
+      {
+        name:'抢劫罪',
+        data:[12, 12, 22, 33, 11, 22, 33, 33, 22, 11, 11, 22]
+      },
+      {
+        name:'抢夺罪',
+        data:[5, 11, 5, 22, 5, 33, 4, 11, 1, 22, 33, 11]
+      },
+      {
+        name:'故意杀人罪',
+        data:[6, 10, 58, 35, 6, 54, 45, 34, 79, 76, 55, 77]
+      },
+      {
+        name:'故意伤害罪',
+        data:[7, 9, 11, 33, 44, 44, 22, 33, 44, 22, 9, 44]
+      },
+      {
+        name:'毒品类犯罪',
+        data:[8, 10, 55, 21, 33, 11, 6, 11, 1, 22, 7, 22]
+      },
+      {
+        name:'其他',
+        data:[69, 59, 58, 40, 90, 54, 47, 34, 45, 56, 55, 22]
+      }
+    ]
+    lineCharts(lineChartsData, 'myCharts_3');
+  }
+  function statisticAnalysisType(){
+    var event = new CustomEvent('statisticAnalysisType', {detail: {index: dataIndex}})
+    window.parent.parent.window.dispatchEvent(event)
+  }
+</script>
+<script src="caseJs/echartsCompontents.js"></script>
+<style>
+  html,body{
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    font-family: '微软雅黑';
+  }
+  *{
+    font-family: '微软雅黑';
+  }
+  .caseFactStory{
+    width: calc(100% - 2px);
+    height: calc(100% - 2px);
+    border: 1px solid #A1CFEB;
+  }
+  .header_div{
+    width: 100%;
+    background: #4082C1;
+    height: 45px;
+  }
+  .echarts_div{
+    width: 100%;
+    box-sizing: border-box;
+    height: calc(100% - 45px);
+    padding: 20px 20px 0 20px;
+    background: #F2F8FD;
+  }
+  .header_title{
+    color: #fff;
+    border-left: 3px solid #fff;
+    padding-left: 10px;
+    margin-top: 11px;
+    margin-left: 15px;
+    display: inline-block;
+  }
+  .row{
+    height: calc(50% - 20px);
+    width: calc(100% - 0px);
+  }
+  .row:first-child{
+    margin-bottom: 20px;
+    height: calc(50% - 21px);
+    border: none;
+  }
+  .row:last-child{
+    padding-bottom: 20px;
+  }
+  .row .tr {
+    border: 1px solid #A4D3ED;
+    height: 100%;
+    float: left;
+    width: 75%;
+  }
+  .row .tr:last-child {
+    width: calc(25% - 24px);
+    margin-left: 20px;
+  }
+  .row:first-child .tr{
+    width: 25%;
+  }
+  .row:first-child .tr:nth-child(2){
+    width: calc(50% - 46px);
+    margin-left: 20px;
+  }
+  .row:last-child .tr:first-child{
+    width: calc(75% - 23px);
+  }
+  .row:last-child .tr:last-child{
+    width: calc(25% - 1px);
+  }
+  .trHead{
+    height: 38px;
+    box-sizing: border-box;
+    line-height: 38px;
+    padding-left: 20px;
+    border-bottom: 1px solid #A4D3ED;
+    background-color: #C3E6F5;
+    width: 100%;
+  }
+  .trHead span{
+    color: #10609f;
+    font-family: "Microsoft Yahei";
+    font-size: 16px;
+  }
+  .echart_containter{
+    padding: 25px 25px 0 0;
+    height: calc(100% - 63px);
+    width: calc(100% - 25px);
+    position: relative;
+  }
+  #myChartsOne, #myCharts_2, #myCharts_3, #myCharts_4{
+    width: 100%;
+    height: 100%;
+  }
+  .blueBtn{position: absolute;top: 3px;left: 10px;z-index: 2;}
+  .blueBtn>button{border: 1px solid #7CBED4;color: #1775C1;padding: 3px 5px;float: left;margin-right: 10px;border-radius: 3px;background: #fff;cursor: pointer;}
+  .blueBtn>button.active{border: 1px solid #196eac;background: #196eac;color: #fff;}
+  .header_right{float: right;height: 100%;padding-right: 15px;}
+  .header_right>select{border-radius: 3px;-webkit-appearance: none;width: 120px;color: #1070BF;height: 32px;box-sizing: border-box;
+    font-size: 14px;border: 1px solid #7BBCD5;outline: none;padding-right: 5px;padding-left: 15px;background-color: #fff;
+    background-image:url(images/arrow.png);background-repeat: no-repeat;background-position: right calc(10px) center;margin-top: 6px;}
+  .header_right>button{border: none;background-color: #3ab5fb;border-radius: 3px;color: #fff;background-image: url(images/search.png);
+    background-repeat: no-repeat;background-position: 15px 11px;height: 32px;width: 80px;margin-top: 6px;text-indent: 15px;cursor: pointer;}
+  .header_right>span{color: #fff;font-size: 14px}
+  ::-webkit-scrollbar {width: 8px;height: 10px;background-color: #d6dde2;}
+  ::-webkit-scrollbar-track {-webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);border-radius: 8px;background-color: #d6dde2;}
+  ::-webkit-scrollbar-thumb {border-radius: 8px;-webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);background-color: #4c89b6;}
+  .header_right .backBtn{background-image: none;text-indent: 0;}
+</style>
+</html>

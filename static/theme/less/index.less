@@ -1,0 +1,117 @@
+/*主题颜色，appHeader*/
+@header-primary:#025bb7;
+@header-dark:#3376b6;
+@header-light:#f7f7f7;
+.header-bg{
+  background-color: @header-primary;
+}
+.header-bg-dark{
+  background-color: @header-dark;
+}
+.header-bg-light{
+  background-color: @header-light;
+}
+.manager{
+  background-color: #1E4E72;
+}
+.manager:hover{
+  background-color: #f7f7f7;
+}
+/*全局字体*/
+@font-tiny:12px;
+@menu-color:#99c1ef;
+.font-tiny{
+  font-size: @font-tiny;
+}
+.font-small{
+  font-size: @font-tiny + 2px;
+}
+.font-normal{
+  font-size: @font-tiny + 4px;
+}
+.font-big{
+  font-size: @font-tiny + 10px;
+}
+.menu-color{
+  color:@menu-color;
+}
+.submenu a{
+  .menu-color;
+  .text-line-none;
+}
+/*按钮不同状态*/
+@btn-primary:#eee;
+@btn-warning:yellow;
+@btn-success:green;
+@btn-default:#fff;
+.inline-block{
+  display: inline-block;
+}
+.btn-primary{
+  background-color: @btn-primary;
+  .inline-block;
+}
+.btn-warning{
+  background-color: @btn-warning;
+  .inline-block;
+}
+.btn-success{
+  background-color: @btn-success;
+  .inline-block;
+}
+.btn-default{
+  background-color: @btn-default;
+  .inline-block;
+}
+/*slider*/
+@slider-bg-default:#383e4b;
+@slider-bg-primary:#ddd;
+@slider-bg-light:#f7f7f7;
+.slider-bg-default{
+  background-color: @slider-bg-default;
+}
+.slider-bg-primary{
+  background-color: @slider-bg-primary;
+}
+.slider-bg-light{
+  background-color: @slider-bg-light;
+}
+.slider-bg-lighter{
+  background-color: lighten(@slider-bg-default,5%);/*less提供了颜色函数*/
+}
+.text-line-none{
+  text-decoration:none;
+}
+/*文本修饰线*/
+a.text-line-none{
+  .text-line-none;/*样式的调用*/
+}
+/*侧边栏*/
+@slider-bg:#383c4b;/*侧边栏背景颜色*/
+@slider-color:#99c1ef;/*侧边栏字体颜色*/
+.slider-change{
+  background-color: @slider-bg;
+  color:@slider-color;
+}
+.slider{
+  float: left;
+  background: url('../images/home/menu-bg.png') no-repeat;
+  background-position: left bottom;
+}
+.appheader-modulelist li a.router-link-active {
+  background-color: #01408D;
+  border: 1px solid #3989C4;
+  border-bottom: 5px solid #1AD1CC;
+}
+
+.appheader-modulelist li a:hover {
+  background-color: #01408D;
+  border-bottom: 5px solid #1AD1CC;
+}
+.appheader-modulelist li a {
+  	border-bottom: 5px solid #1E6092;
+}
+.submenu a.router-link-active{
+  color: #349adb;
+  background-color: #01478d;
+}

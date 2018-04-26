@@ -1,0 +1,1801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>公诉统计分析</title>
+  <link rel="stylesheet" href="caseJs/jquery-easyui-1.5.3/themes/icon.css">
+  <link rel="stylesheet" href="caseJs/jquery-easyui-1.5.3/themes/material/easyui.css">
+  <script type="text/javascript" src="caseJs/echarts.js"></script>
+  <script type="text/javascript" src="caseJs/echarts-wordcloud.min.js"></script>
+  <script type="text/javascript" src="caseJs/jquery-1.10.1.min.js"></script>
+  <script type="text/javascript" src="caseJs/jquery-easyui-1.5.3/jquery.easyui.min.js"></script>
+  <script type="text/javascript" src="caseJs/jquery-easyui-1.5.3/locale/easyui-lang-zh_CN.js"></script>
+</head>
+<body onload="init()">
+<div class="statisticAnalysis">
+  <div class="header_div">
+    <span class="header_title">公诉统计分析</span>
+    <div class="header_right">
+      <select id="citySelect">
+        <option value="四川省">四川省</option>
+        <option value="成都市">成都市</option>
+        <option value="自贡市">自贡市</option>
+        <option value="攀枝花市">攀枝花市</option>
+        <option value="泸州市">泸州市</option>
+        <option value="德阳市">德阳市</option>
+        <option value="绵阳市">绵阳市</option>
+        <option value="广元市">广元市</option>
+        <option value="遂宁市">遂宁市</option>
+        <option value="内江市">内江市</option>
+        <option value="乐山市">乐山市</option>
+        <option value="南充市">南充市</option>
+        <option value="宜宾市">宜宾市</option>
+        <option value="广安市">广安市</option>
+        <option value="达州市">达州市</option>
+        <option value="眉山市">眉山市</option>
+        <option value="雅安市">雅安市</option>
+        <option value="巴中市">巴中市</option>
+        <option value="资阳市">资阳市</option>
+        <option value="阿坝藏族羌族自治州">阿坝藏族羌族自治州</option>
+        <option value="甘孜藏族自治州">甘孜藏族自治州</option>
+        <option value="凉山彝族自治州">凉山彝族自治州</option>
+      </select>
+      <input id="ksDate" type="text">
+      <span>至</span>
+      <input id="jsDate" type="text">
+      <button onclick="search()">查询</button>
+    </div>
+  </div>
+  <div class="echarts_div">
+    <div class="content_left">
+      <div class="left_top">
+        <div class="module_title">受理环节<span onclick="acceptInterfaceType()">更多></span></div>
+        <div id="left_top_pie"></div>
+      </div>
+      <div class="left_center">
+        <div class="module_title">审查环节<span onclick="examineLinkType()">更多></span></div>
+        <div id="left_center_pie"></div>
+      </div>
+      <div class="left_bottom">
+        <div class="module_tabs">
+          <ul>
+            <li class="active">证据分布情况</li>
+            <li>问题证据分布</li>
+          </ul>
+        </div>
+        <div id="left_bottom_bar"></div>
+        <div id="left_bottom_bar2"></div>
+      </div>
+    </div>
+    <div class="content_center">
+      <div id="content_center_top" class="content_center_top">
+        <div>
+          <div>
+            <span class="blue">提前介入</span>
+            <div><span class="orange">103</span>件</div>
+            <div><span class="orange">112</span>人</div>
+          </div>
+          <div>
+            <span class="blue">审结数</span>
+            <div><span class="orange">1069</span>件</div>
+            <div><span class="orange">1216</span>人</div>
+          </div>
+          <div>
+            <span class="blue">有效判决数</span>
+            <div><span class="orange">2123</span>件</div>
+            <div><span class="orange">2408</span>人</div>
+          </div>
+        </div>
+        <div>
+          <div>
+            <span class="blue">受理数</span>
+            <div><span class="orange">3021</span>件</div>
+            <div><span class="orange">4052</span>人</div>
+          </div>
+          <div>
+            <span class="blue">起诉数</span>
+            <div><span class="orange">2274</span>件</div>
+            <div><span class="orange">2527</span>人</div>
+          </div>
+          <div>
+            <span class="blue">纠正违法</span>
+            <div><span class="orange">108</span>件</div>
+            <div><span class="orange">129</span>人</div>
+          </div>
+        </div>
+      </div>
+      <div id="content_center_map"></div>
+    </div>
+    <div class="content_right">
+      <div class="right_top">
+        <div class="module_title">起诉环节<span onclick="sueLinkType()">更多></span></div>
+        <div id="right_top_bar"></div>
+      </div>
+      <div class="right_center">
+        <div class="module_title">判决环节<span onclick="judgmentInterfaceType()">更多></span></div>
+        <div id="right_center_bar"></div>
+      </div>
+      <div class="right_bottom">
+        <div class="module_tabs">
+          <ul>
+            <li class="active">案件事实情况</li>
+            <li>案件情节情况</li>
+            <span id="ajqkClick">更多></span>
+          </ul>
+        </div>
+        <div id="right_bottom_bar"></div>
+        <div id="right_bottom_bar2"></div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+<script>
+  var NewData = []
+  var dataIndex = 0
+  var chartMapData = [
+    {
+      name: '四川省',
+      value: Math.round(Math.random() * 1000),
+    },
+    {
+      name: '成都市',
+      value: Math.round(Math.random() * 1000),
+    },
+    {
+      name: '自贡市',
+      value: Math.round(Math.random() * 1000),
+    },
+    {
+      name: '攀枝花市',
+      value: Math.round(Math.random() * 1000),
+    },
+    {
+      name: '泸州市',
+      value: Math.round(Math.random() * 1000),
+    },
+    {
+      name: '德阳市',
+      value: Math.round(Math.random() * 1000),
+    },
+    {
+      name: '绵阳市',
+      value: Math.round(Math.random() * 1000),
+    },
+    {
+      name: '广元市',
+      value: Math.round(Math.random() * 1000),
+    },
+    {
+      name: '遂宁市',
+      value: Math.round(Math.random() * 1000),
+    },
+    {
+      name: '内江市',
+      value: Math.round(Math.random() * 1000),
+    },
+    {
+      name: '乐山市',
+      value: Math.round(Math.random() * 1000),
+    },
+    {
+      name: '南充市',
+      value: Math.round(Math.random() * 1000),
+    },
+    {
+      name: '宜宾市',
+      value: Math.round(Math.random() * 1000),
+    },
+    {
+      name: '广安市',
+      value: Math.round(Math.random() * 1000),
+    },
+    {
+      name: '达州市',
+      value: Math.round(Math.random() * 1000),
+    },
+    {
+      name: '眉山市',
+      value: Math.round(Math.random() * 1000),
+    },
+    {
+      name: '雅安市',
+      value: Math.round(Math.random() * 1000),
+    },
+    {
+      name: '巴中市',
+      value: Math.round(Math.random() * 1000),
+    },
+    {
+      name: '资阳市',
+      value: Math.round(Math.random() * 1000),
+    },
+    {
+      name: '阿坝藏族羌族自治州',
+      value: Math.round(Math.random() * 1000),
+    },
+    {
+      name: '甘孜藏族自治州',
+      value: Math.round(Math.random() * 1000),
+    },
+    {
+      name: '凉山彝族自治州',
+      value: Math.round(Math.random() * 1000),
+    }
+  ]
+  var ajslData = [
+    {
+      tqjr: [103, 112],
+      sjs: [1069, 1216],
+      yxpjs: [2123, 2408],
+      sls: [3021, 4052],
+      qss: [2274, 2527],
+      jzwf: [108, 129]
+    }
+  ]
+  // 时间控件配置
+  $('#ksDate').datebox();
+  $('#jsDate').datebox();
+  formatterDateks = function(date) {
+    var day = date.getDate() > 9 ? date.getDate() : "0" + date.getDate();
+    var month = '10'
+    return '2017' + '-' + month + '-' + day;
+  };
+  formatterDatejs = function(date) {
+    var day = date.getDate() > 9 ? date.getDate() : "0" + date.getDate();
+    var month = (date.getMonth() + 1) > 9 ? (date.getMonth() + 1) : "0"
+      + (date.getMonth() + 1);
+    return date.getFullYear() + '-' + month + '-' + day;
+  };
+  $('#ksDate').datebox('setValue', formatterDateks(new Date()));
+  $('#jsDate').datebox('setValue', formatterDatejs(new Date()));
+  // 案件数量
+  function setAjslData(index){
+    $('#content_center_top').html(
+      '<div>\n' +
+      '  <div>\n' +
+      '    <span class="blue">提前介入</span>\n' +
+      '    <div><span class="orange">'+ NewData[index].ajslData.tqjr[0] +'</span>件</div>\n' +
+      '    <div><span class="orange">'+ NewData[index].ajslData.tqjr[1] +'</span>人</div>\n' +
+      '  </div>\n' +
+      '  <div>\n' +
+      '    <span class="blue">审结数</span>\n' +
+      '    <div><span class="orange">'+ NewData[index].ajslData.sjs[0] +'</span>件</div>\n' +
+      '    <div><span class="orange">'+ NewData[index].ajslData.sjs[1] +'</span>人</div>\n' +
+      '  </div>\n' +
+      '  <div>\n' +
+      '    <span class="blue">有效判决数</span>\n' +
+      '    <div><span class="orange">'+ NewData[index].ajslData.yxpjs[0] +'</span>件</div>\n' +
+      '    <div><span class="orange">'+ NewData[index].ajslData.yxpjs[1] +'</span>人</div>\n' +
+      '  </div>\n' +
+      '</div>\n' +
+      '<div>\n' +
+      '  <div>\n' +
+      '    <span class="blue">受理数</span>\n' +
+      '    <div><span class="orange">'+ NewData[index].ajslData.sls[0] +'</span>件</div>\n' +
+      '    <div><span class="orange">'+ NewData[index].ajslData.sls[1] +'</span>人</div>\n' +
+      '  </div>\n' +
+      '  <div>\n' +
+      '    <span class="blue">起诉数</span>\n' +
+      '    <div><span class="orange">'+ NewData[index].ajslData.qss[0] +'</span>件</div>\n' +
+      '    <div><span class="orange">'+ NewData[index].ajslData.qss[1] +'</span>人</div>\n' +
+      '  </div>\n' +
+      '  <div>\n' +
+      '    <span class="blue">纠正违法</span>\n' +
+      '    <div><span class="orange">'+ NewData[index].ajslData.jzwf[0] +'</span>件</div>\n' +
+      '    <div><span class="orange">'+ NewData[index].ajslData.jzwf[1] +'</span>人</div>\n' +
+      '  </div>\n' +
+      '</div>'
+    );
+  }
+  function init(){
+    var event = new CustomEvent('statisticAnalysisOnload', {detail: {index: dataIndex}})
+    window.parent.parent.window.dispatchEvent(event)
+  }
+  function setNode(data) {
+    NewData = data.data
+    console.log(data)
+    dataIndex = data.index
+    setAjslData(dataIndex);
+    setCityData(chartMapData[dataIndex].name)
+    // 地图
+    showMap('content_center_map');
+    // 受理环节 饼图
+    rollPie(NewData[dataIndex].left_top_pie, 'left_top_pie', 'statisticAnalysis');
+    // 起诉环节 柱状图
+    loadBar2(NewData[dataIndex].right_top_bar, 'right_top_bar');
+    // 判决环节
+    barPLT(NewData[dataIndex].barData, 'right_center_bar', barDataOneFunction);
+    // 证据分布情况 柱状图
+    loadBar2(NewData[dataIndex].right_top_bar2, 'left_bottom_bar');
+    // 审查环节 饼图
+    fullPie(NewData[dataIndex].left_center_pie, 'left_center_pie');
+    // 案件事实情况
+    radida(NewData[dataIndex].right_top_bar, 'right_bottom_bar');
+  }
+  // 模块切换
+  $('.module_tabs>ul>li').on('click',function(){
+    $(this).eq(0).parent().eq(0).children('li').removeClass('active')
+    $(this).addClass('active')
+    if ($(this)[0].innerHTML === '问题证据分布') {
+      barPLT(barData2, 'left_bottom_bar', barDataOneFunction);
+    }
+    if ($(this)[0].innerHTML === '证据分布情况') {
+      loadBar2(right_top_bar2, 'left_bottom_bar');
+    }
+    if ($(this)[0].innerHTML === '案件事实情况') {
+      document.getElementById('right_bottom_bar2').style.display = 'none'
+      document.getElementById('right_bottom_bar').style.display = 'block'
+      radida(right_top_bar, 'right_bottom_bar');
+      $('#ajqkClick').on('click', function(){
+        caseFactsSituationType()
+      })
+    }
+    if ($(this)[0].innerHTML === '案件情节情况') {
+      document.getElementById('right_bottom_bar').style.display = 'none'
+      document.getElementById('right_bottom_bar2').style.display = 'block'
+      textCloud(data, 'right_bottom_bar2')
+      $('#ajqkClick').on('click', function(){
+        caseFactStoryType()
+      })
+    }
+  })
+  // 右下角更多
+  $('#ajqkClick').on('click', function(){
+    caseFactsSituationType()
+  })
+  // 受理环节
+  function acceptInterfaceType () {
+    var event = new CustomEvent('acceptInterfaceType', {detail: {index: dataIndex}})
+    window.parent.parent.window.dispatchEvent(event)
+  }
+  // 审查环节
+  function examineLinkType () {
+    var event = new CustomEvent('examineLinkType', {detail: {index: dataIndex}})
+    window.parent.parent.window.dispatchEvent(event)
+  }
+  // 起诉环节
+  function sueLinkType () {
+    var event = new CustomEvent('sueLinkType', {detail: {index: dataIndex}})
+    window.parent.parent.window.dispatchEvent(event)
+  }
+  // 判决环节
+  function judgmentInterfaceType () {
+    var event = new CustomEvent('judgmentInterfaceType', {detail: {index: dataIndex}})
+    window.parent.parent.window.dispatchEvent(event)
+  }
+  // 案件事实情况
+  function caseFactsSituationType () {
+    var event = new CustomEvent('caseFactsSituationType', {detail: {index: dataIndex}})
+    window.parent.parent.window.dispatchEvent(event)
+  }
+  // 案件情节情况
+  function caseFactStoryType () {
+    var event = new CustomEvent('caseFactStoryType', {detail: {index: dataIndex}})
+    window.parent.parent.window.dispatchEvent(event)
+  }
+  // 查询按钮
+  function search() {
+    dataIndex = $('#citySelect')[0].selectedIndex
+    // 地图下拉框
+    if(document.getElementById('citySelect').value == '四川省'){
+      chartClick2()
+    }else{
+      chartClick({name: document.getElementById('citySelect').value, dataIndex: dataIndex});
+    }
+    setAjslData(dataIndex);
+    // 受理环节 饼图
+    rollPie(NewData[dataIndex].left_top_pie, 'left_top_pie');
+    // 起诉环节 柱状图
+    loadBar2(NewData[dataIndex].right_top_bar, 'right_top_bar');
+    // 判决环节
+    barPLT(NewData[dataIndex].barData, 'right_center_bar', barDataOneFunction);
+    // 证据分布情况 柱状图
+    loadBar2(NewData[dataIndex].right_top_bar2, 'left_bottom_bar');
+    // 审查环节 饼图
+    fullPie(NewData[dataIndex].left_center_pie, 'left_center_pie');
+    // 案件事实情况
+    radida(NewData[dataIndex].right_top_bar, 'right_bottom_bar');
+  }
+  // 地图
+  var cityProper = {
+    '四川省': './geoJson/sichuan.json',
+    '成都市': './geoJson/china-main-city/510100.json',
+    '自贡市': './geoJson/china-main-city/510300.json',
+    '攀枝花市': './geoJson/china-main-city/510400.json',
+    '泸州市': './geoJson/china-main-city/510500.json',
+    '德阳市': './geoJson/china-main-city/510600.json',
+    '绵阳市': './geoJson/china-main-city/510700.json',
+    '广元市': './geoJson/china-main-city/510800.json',
+    '遂宁市': './geoJson/china-main-city/510900.json',
+    '内江市': './geoJson/china-main-city/511000.json',
+    '乐山市': './geoJson/china-main-city/511100.json',
+    '南充市': './geoJson/china-main-city/511300.json',
+    '宜宾市': './geoJson/china-main-city/511400.json',
+    '广安市': './geoJson/china-main-city/511500.json',
+    '达州市': './geoJson/china-main-city/511600.json',
+    '眉山市': './geoJson/china-main-city/511700.json',
+    '雅安市': './geoJson/china-main-city/511800.json',
+    '巴中市': './geoJson/china-main-city/511900.json',
+    '资阳市': './geoJson/china-main-city/512000.json',
+    '阿坝藏族羌族自治州': './geoJson/china-main-city/513200.json',
+    '甘孜藏族自治州': './geoJson/china-main-city/513300.json',
+    '凉山彝族自治州': './geoJson/china-main-city/513400.json'
+  }
+  var mapData = {
+    '绵阳市': [
+      {
+        name: '安县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '北川羌族自治县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '涪城区',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '江油市',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '平武县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '三台县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '盐亭县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '游仙区',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '梓潼县',
+        value: Math.round(Math.random() * 1000),
+      }
+    ],
+    '广元市': [
+      {
+        name: '苍溪县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '朝天区',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '剑阁县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '利州区',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '青川县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '旺苍县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '元坝区',
+        value: Math.round(Math.random() * 1000),
+      }
+    ],
+    '四川省': [
+      {
+        name: '雅安市',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '凉山彝族自治州',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '甘孜藏族自治州',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '阿坝藏族羌族自治州',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '绵阳市',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '广元市',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '巴中市',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '达州市',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '广安市',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '南充市',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '遂宁市',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '资阳市',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '德阳市',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '成都市',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '眉山市',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '乐山市',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '内江市',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '宜宾市',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '泸州市',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '自贡市',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '攀枝花市',
+        value: Math.round(Math.random() * 1000),
+      }
+    ],
+    '成都市': [
+      {
+        name: '成华区',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '崇州市',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '大邑县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '都江堰市',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '金牛区',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '金堂县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '锦江区',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '龙泉驿区',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '彭州市',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '蒲江县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '青白江区',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '青羊区',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '双流县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '温江区',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '武侯区',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '双流县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '新都区',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '新津县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '邛崃市',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '郫县',
+        value: Math.round(Math.random() * 1000),
+      }
+    ],
+    '自贡市': [
+      {
+        name: '自流井区',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '贡井区',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '大安区',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '沿滩区',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '荣县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '富顺县',
+        value: Math.round(Math.random() * 1000),
+      }
+    ],
+    '攀枝花市': [
+      {
+        name: '西区',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '盐边县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '东区',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '米易县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '仁和区',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '广元市',
+        value: Math.round(Math.random() * 1000),
+      }
+    ],
+    '泸州市': [
+      {
+        name: '古蔺县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '叙永县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '合江县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '泸县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '江阳区',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '纳溪区',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '龙马潭区',
+        value: Math.round(Math.random() * 1000),
+      }
+    ],
+    '阿坝藏族羌族自治州': [
+      {
+        name: '金川县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '阿坝县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '马尔康县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '壤塘县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '九寨沟县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '茂县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '汶川县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '黑水县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '红原县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '理县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '若尔盖县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '松潘县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '小金县',
+        value: Math.round(Math.random() * 1000),
+      }
+    ],
+    '甘孜藏族自治州': [
+      {
+        name: '得荣县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '九龙县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '乡城县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '白玉县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '丹巴县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '道孚县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '德格县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '甘孜县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '炉霍县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '色达县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '石渠县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '新龙县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '巴塘县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '康定县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '理塘县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '雅江县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '泸定县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '稻城县',
+        value: Math.round(Math.random() * 1000),
+      }
+    ],
+    '凉山彝族自治州': [
+      {
+        name: '德昌县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '会理县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '冕宁县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '木里藏族自治县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '普格县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '西昌市',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '喜德县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '盐源县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '金阳县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '雷波县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '美姑县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '布拖县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '甘洛县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '会东县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '宁南县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '越西县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '昭觉县',
+        value: Math.round(Math.random() * 1000),
+      }
+    ],
+    '雅安市': [
+      {
+        name: '石棉县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '芦山县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '名山县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '汉源县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '天全县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '荥经县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '雨城区',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '宝兴县',
+        value: Math.round(Math.random() * 1000),
+      }
+    ],
+    '乐山市': [
+      {
+        name: '峨边彝族自治县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '峨眉山市',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '金口河区',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '井研县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '马边彝族自治县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '沙湾区',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '市中区',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '五通桥区',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '沐川县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '五通桥区',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '犍为县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '夹江县',
+        value: Math.round(Math.random() * 1000),
+      }
+    ],
+    '巴中市': [
+      {
+        name: '巴州区',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '南江县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '平昌县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '通江县',
+        value: Math.round(Math.random() * 1000),
+      }
+    ],
+    '达州市': [
+      {
+        name: '广安区',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '华蓥市',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '邻水县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '武胜县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '岳池县',
+        value: Math.round(Math.random() * 1000),
+      }
+    ],
+    '南充市': [
+      {
+        name: '高坪区',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '嘉陵区',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '南部县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '蓬安县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '顺庆区',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '西充县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '仪陇县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '营山县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '阆中市',
+        value: Math.round(Math.random() * 1000),
+      }
+    ],
+    '资阳市': [
+      {
+        name: '简阳市',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '乐至县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '安岳县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '雁江区',
+        value: Math.round(Math.random() * 1000),
+      }
+    ],
+    '眉山市': [
+      {
+        name: '达县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '大竹县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '开江县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '渠县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '通川区',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '万源市',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '宣汉县',
+        value: Math.round(Math.random() * 1000),
+      }
+    ],
+    '内江市': [
+      {
+        name: '隆昌县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '东兴区',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '市中区',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '威远县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '资中县',
+        value: Math.round(Math.random() * 1000),
+      }
+    ],
+    '宜宾市': [
+      {
+        name: '彭山县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '丹棱县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '东坡区',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '洪雅县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '青神县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '仁寿县',
+        value: Math.round(Math.random() * 1000),
+      }
+    ],
+    '广安市': [
+      {
+        name: '长宁县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '翠屏区',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '高县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '江安县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '南溪区',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '屏山县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '兴文县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '宜宾县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '珙县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '筠连县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '青白江区',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '青羊区',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '双流县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '温江区',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '武侯区',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '双流县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '新都区',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '新津县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '邛崃市',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '郫县',
+        value: Math.round(Math.random() * 1000),
+      }
+    ],
+    '德阳市': [
+      {
+        name: '罗江县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '绵竹市',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '什邡市',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '中江县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '旌阳区',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '金堂县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '广汉市',
+        value: Math.round(Math.random() * 1000),
+      }
+    ],
+    '遂宁市': [
+      {
+        name: '安居区',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '船山区',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '大英县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '蓬溪县',
+        value: Math.round(Math.random() * 1000),
+      },
+      {
+        name: '射洪县',
+        value: Math.round(Math.random() * 1000),
+      }
+    ]
+  }
+  var mapOption = {
+    visualMap: {
+      min: 0,
+      max: 1000,
+      dimension:0,
+      left: 'left',
+      top: 'bottom',
+      text: ['1000', '0'], // 文本，默认为数值文本
+      calculable: false,
+      inRange: {
+        color: ['#d4dcda', '#bddbf0', '#8ac0e1', '#699ab6']
+      }
+    },
+    series: [{
+      type: 'map',
+      mapType: chartMapData[dataIndex].name,
+      label: {
+        normal: {
+          show: true,
+          color: '#000'
+        },
+        emphasis: {
+          textStyle: {
+            color: 'rgba(255, 255, 255, 0.8)'
+          }
+        }
+      },
+      itemStyle: {
+        normal: {
+          borderColor: '#E2EFFA',
+          borderWidth: 2,
+          areaColor: '#000',
+        },
+        emphasis: {
+          areaColor: '#e75b3d',
+          borderColor: 'rgb(255,222,254)',
+          borderWidth: 1,
+        }
+      },
+      animation: false,
+      data: mapData[chartMapData[dataIndex].name]
+    }]
+  }
+  var mapId = ''
+  var myMapChart;
+  function showMap(id) {
+    mapId = id;
+    if (myMapChart != null && myMapChart != "" && myMapChart != undefined) {
+      myMapChart.dispose();
+    }
+    mapOption.series[0].mapType = chartMapData[dataIndex].name;
+    mapOption.series[0].data = mapData[chartMapData[dataIndex].name];
+    myMapChart = echarts.init(document.getElementById(mapId));
+    $.get(cityProper[chartMapData[dataIndex].name], function(geoJson) {
+      echarts.registerMap(chartMapData[dataIndex].name, geoJson);
+      myMapChart.setOption(mapOption);
+      myMapChart.resize()
+      window.addEventListener("resize",function(){
+        myMapChart.resize();
+      });
+    });
+    // 地图下拉框
+    if(chartMapData[dataIndex].name != '四川省'){
+      myMapChart.on("click", chartClick2);
+    }else{
+      myMapChart.on("click", chartClick);
+    }
+  }
+  function chartClick(param) {
+    chartMapData.forEach(function(v,index){
+      if(v.name == param.name){
+        dataIndex = index
+      }
+    })
+    if (myMapChart != null && myMapChart != "" && myMapChart != undefined) {
+      myMapChart.dispose();
+    }
+    myMapChart = echarts.init(document.getElementById(mapId));
+    myMapChart.setOption(mapOption, false);
+    var selectedPro = param.name;
+    if (!cityProper[selectedPro]) {
+      mapOption.series.splice(1);
+      mapOption.legend = null;
+      mapOption.visualMap = null;
+      myMapChart.setOption(mapOption, true);
+      return;
+    }
+    $.get(cityProper[selectedPro], function(geoJson) {
+      echarts.registerMap(selectedPro, geoJson);
+      mapOption.series[0] = {
+        type: 'map',
+        mapType: selectedPro,
+        label: {
+          normal: {
+            show: true,
+            color: '#000'
+          },
+          emphasis: {
+            textStyle: {
+              color: 'rgba(255, 255, 255, 0.8)'
+            }
+          }
+        },
+        itemStyle: {
+          normal: {
+            borderColor: '#E2EFFA',
+            borderWidth: 2,
+            areaColor: '#000',
+          },
+          emphasis: {
+            areaColor: '#e75b3d',
+            borderColor: 'rgb(255,222,254)',
+            borderWidth: 1,
+          }
+        },
+        animation: false,
+        data: mapData[selectedPro]
+      };
+      myMapChart.setOption(mapOption, true);
+      myMapChart.on("click", chartClick2);
+    });
+    setCityData(selectedPro)
+    setAjslData(dataIndex);
+    // 受理环节 饼图
+    rollPie(NewData[dataIndex].left_top_pie, 'left_top_pie');
+    // 起诉环节 柱状图
+    loadBar2(NewData[dataIndex].right_top_bar, 'right_top_bar');
+    // 判决环节
+    barPLT(NewData[dataIndex].barData, 'right_center_bar', barDataOneFunction);
+    // 证据分布情况 柱状图
+    loadBar2(NewData[dataIndex].right_top_bar2, 'left_bottom_bar');
+    // 审查环节 饼图
+    fullPie(NewData[dataIndex].left_center_pie, 'left_center_pie');
+    // 案件事实情况
+    radida(NewData[dataIndex].right_top_bar, 'right_bottom_bar');
+  }
+  function chartClick2(){
+    dataIndex = 0
+    if (myMapChart != null && myMapChart != "" && myMapChart != undefined) {
+      myMapChart.dispose();
+    }
+    myMapChart = echarts.init(document.getElementById(mapId));
+    myMapChart.setOption(mapOption, false);
+    var selectedPro = '四川省';
+    mapOption.series[0].mapType = chartMapData[dataIndex].name;
+    mapOption.series[0].data = mapData[chartMapData[dataIndex].name];
+    $.get(cityProper[chartMapData[dataIndex].name], function(geoJson) {
+      echarts.registerMap(chartMapData[dataIndex].name, geoJson);
+      myMapChart.setOption(mapOption, true);
+      myMapChart.on("click", chartClick);
+    });
+    setCityData(selectedPro)
+    setAjslData(dataIndex);
+    // 受理环节 饼图
+    rollPie(NewData[dataIndex].left_top_pie, 'left_top_pie');
+    // 起诉环节 柱状图
+    loadBar2(NewData[dataIndex].right_top_bar, 'right_top_bar');
+    // 判决环节
+    barPLT(NewData[dataIndex].barData, 'right_center_bar', barDataOneFunction);
+    // 证据分布情况 柱状图
+    loadBar2(NewData[dataIndex].right_top_bar2, 'left_bottom_bar');
+    // 审查环节 饼图
+    fullPie(NewData[dataIndex].left_center_pie, 'left_center_pie');
+    // 案件事实情况
+    radida(NewData[dataIndex].right_top_bar, 'right_bottom_bar');
+  }
+  function setCityData(name){
+    $('#citySelect').val(name)
+  }
+
+  // 受理环节 饼图
+  var barDataOneFunction = {
+    formatter1: function (e) {
+      var str = ''
+      str = e.data + '件'
+      return str
+    },
+    formatter2: function (e) {
+      var str = ''
+      str = e.data + '人'
+      return str
+    },
+    xAxisFormatter: function (value) {
+      return value.split('').join('')
+    }
+  }
+  var data = {
+    cloundData: [{
+      name: '坦白',
+      value: 10000,
+      textStyle: {
+        normal: {
+          color: '#206B9F'
+        },
+        emphasis: {
+          color: '#206B9F'
+        }
+      }
+    }, {
+      name: '退赃/退赔',
+      value: 6181,
+      textStyle: {
+        normal: {
+          color: '#206B9F'
+        },
+        emphasis: {
+          color: '#206B9F'
+        }
+      }
+    }, {
+      name: '自愿认罪',
+      value: 4386,
+      textStyle: {
+        normal: {
+          color: '#206B9F'
+        },
+        emphasis: {
+          color: '#206B9F'
+        }
+      }
+    }, {
+      name: '自首',
+      value: 4055,
+      textStyle: {
+        normal: {
+          color: '#206B9F'
+        },
+        emphasis: {
+          color: '#206B9F'
+        }
+      }
+    }, {
+      name: '坦白',
+      value: 2467
+    }, {
+      name: '退赃/退赔',
+      value: 2244,
+      textStyle: {
+        normal: {
+          color: '#206B9F'
+        },
+        emphasis: {
+          color: '#206B9F'
+        }
+      }
+    }, {
+      name: '立功',
+      value: 1898,
+      textStyle: {
+        normal: {
+          color: '#206B9F'
+        },
+        emphasis: {
+          color: '#206B9F'
+        }
+      }
+    }, {
+      name: '自首',
+      value: 1484
+    }, {
+      name: '取得被害人谅解',
+      value: 1112
+    }, {
+      name: '与被害人和解',
+      value: 965,
+      textStyle: {
+        normal: {
+          color: '#206B9F'
+        },
+        emphasis: {
+          color: '#206B9F'
+        }
+      }
+    }, {
+      name: '自首',
+      value: 847
+    }, {
+      name: '立功',
+      value: 582
+    }, {
+      name: '退赃/退赔',
+      value: 555,
+      textStyle: {
+        normal: {
+          color: '#206B9F'
+        },
+        emphasis: {
+          color: '#206B9F'
+        }
+      }
+    }, {
+      name: '坦白',
+      value: 550
+    }]
+  }
+  var left_top_pie = {
+    radius : [40, 30],
+    topTextSize: '20',
+    showBottomText: false,
+    textPadding: [20, 0, 0, 0],
+    topTextFormatter: '',
+    bottomTextFormatter: '',
+    xAxisData: ['受理件数', '不受理件数', '他院改变管辖给我院件数'],
+    seriesData: [
+      {
+        title: '受理件数',
+        center : ['20%', '50%'],
+        data : [
+          {name:'受理件数', value:54},
+          {name:'其他', value:46}
+        ]
+      },
+      {
+        title: '不受理件数',
+        center : ['50%', '50%'],
+        data : [
+          {name:'不受理件数', value:21},
+          {name:'其他', value:79}
+        ]
+      },
+      {
+        title: '他院改变管辖给我院',
+        center : ['80%', '50%'],
+        data : [
+          {name:'他院改变管辖给我院', value:89},
+          {name:'其他', value:11}
+        ]
+      }
+    ],
+  };
+  // 审查环节 饼图
+  var left_center_pie = {
+    labelLineLength: 0,
+    Title: '审查环节',
+    legendData: ['拟不起诉公开审查件数','延长审查起诉期限件数', '退回补充侦查件数', '退查（不）重报数','改变管辖件数'],
+    seriesDataOne: [
+      {value:335, name:'拟不起诉公开审查件数'},
+      {value:221, name:'延长审查起诉期限件数'},
+      {value:158, name:'退回补充侦查件数'},
+      {value:99, name:'退查（不）重报数'},
+      {value:25, name:'改变管辖件数'}
+    ],
+    lengedShow: false,
+    radius: ['50%', '70%']
+  };
+  // 起诉环节 柱状图
+  var right_top_bar = {
+    legendData: ['起诉件数','不起诉件数', '附条件不起诉件数', '法院退回件数', '追诉漏犯、漏罪', '撤回起诉件数', '不起诉复议', '不起诉复核'],
+    gardTop: '20%',
+    showLabel: false,
+    gridBottom: '0%',
+    yAxisData: ['起诉件数','不起诉件数','附条件不起诉件数','法院退回件数','追诉漏犯、漏罪','撤回起诉件数','不起诉复议','不起诉复核'],
+    seriesData: [
+      {
+        name: '件数',
+        barGap:'40%',
+        barCategoryGap:'50%',
+        data: [31, 9, 11, 33, 44, 55, 66, 77]
+      }
+    ],
+    yaxisPosition: 'right',
+    lengedShow: false
+  }
+  var right_top_bar2 = {
+    legendData: ['视听资料、电子数据','勘验、检查、辨认','鉴定意见','被害人陈述','被告人供述','证人证言','物证','书证'],
+    gardTop: '20%',
+    gridBottom: '0%',
+    showLabel: false,
+    seriesColor: '#1D86B4',
+    yAxisData: ['视听资料、电子数据','勘验、检查、辨认','鉴定意见','被害人陈述','被告人供述','证人证言','物证','书证'],
+    seriesData: [
+      {
+        name: '证据分布情况',
+        barGap:'40%',
+        barCategoryGap:'50%',
+        data: [31, 9, 11, 33, 44, 55, 66, 77]
+      }
+    ],
+    yaxisPosition: 'right',
+    lengedShow: false
+  }
+  // 证据分布情况 柱状图
+  var left_bottom_bar = {
+    legendData: ['起诉件数','不起诉件数', '附条件不起诉件数', '法院退回件数', '追诉漏犯、漏罪', '撤回起诉件数', '不起诉复议', '不起诉复核'],
+    lengedShow: false, // 是否显示图例
+    showLabel: false,
+    seriesDataOne: [
+      {value:335, name:'起诉件数'},
+      {value:221, name:'不起诉件数'},
+      {value:158, name:'附条件不起诉件数'},
+      {value:99, name:'法院退回件数'},
+      {value:221, name:'追诉漏犯、漏罪'},
+      {value:158, name:'撤回起诉件数'},
+      {value:99, name:'不起诉复议'},
+      {value:158, name:'不起诉复核'}
+    ]
+  };
+  // 判决环节
+  var barData = {
+    xAxisData: ['有罪判决人数','无罪判决人数','不负刑事责任人数'],
+    legendData: ['证据分布情况'], //
+    seriesData: [
+      {
+        name: '证据分布情况',
+        data: [433, 402, 415]
+      }
+    ],
+    yaxisPosition: 'left',
+    lengedShow: false
+  }
+  var barData2 = {
+    xAxisData: ['非法证据','瑕疵证据','疑点证据'],
+    legendData: ['问题证据分布'], //
+    showLabel: false,
+    seriesData: [
+      {
+        name: '分类罪名占比',
+        data: [433, 402, 415]
+      }
+    ],
+    yaxisPosition: 'left',
+    lengedShow: false
+  }
+</script>
+<script src="caseJs/echartsCompontents.js"></script>
+<style>
+  html,body{width: 100%;height: 100%;margin: 0;font-family: '微软雅黑';}
+  *{font-family: '微软雅黑';}
+  .statisticAnalysis{width: 100%;height: 100%;border: 1px solid #A1CFEB;box-sizing: border-box;}
+  .header_div{width: 100%;background: #4082C1;height: 45px;}
+  .echarts_div{width: 100%;height: calc(100% - 45px);background: #F3FAFD;padding: 15px;box-sizing: border-box;}
+  .header_title{color: #fff;border-left: 3px solid #fff;padding-left: 10px;margin-top: 11px;margin-left: 15px;display: inline-block;}
+  .content_left{width: 25%;height: 100%;float: left;box-sizing: border-box;}
+  .content_center{width: calc(50% - 30px);height: 100%;float: left;margin-left: 15px;margin-right: 15px;border: 1px solid #9FCFEA;box-sizing: border-box;background: #E2EFFA;}
+  .content_right{width: 25%;height: 100%;float: left;box-sizing: border-box;}
+  .left_top,.right_top{height: 28%;border: 1px solid #9FCFEA;box-sizing: border-box;}
+  .left_center,.right_center{height: calc(36% - 15px);border: 1px solid #9FCFEA;margin-top: 15px;box-sizing: border-box;}
+  .left_bottom,.right_bottom{height: calc(36% - 15px);border: 1px solid #9FCFEA;margin-top: 15px;box-sizing: border-box;}
+  .module_title{height: 35px;width: 100%;border-bottom: 1px solid #A0CFEA;color: #10609f;font-size: 16px;padding-left: 15px;line-height: 35px;box-sizing: border-box;background: #c3e6f5;}
+  .module_title>span{float: right;font-size: 14px;margin-right: 10px;text-decoration: underline;cursor: pointer;}
+  #content_center_map{width: 100%;height: calc(100% - 110px);}
+  #left_top_pie,#left_center_pie,#right_top_bar,#right_center_bar,#left_bottom_bar,#right_bottom_bar,#right_bottom_bar2{width: 100%;height: calc(100% - 35px);background: #fff;}
+  #right_bottom_bar2{display: none}
+  .module_tabs{width: 100%;height: 35px;border-bottom: 1px solid #A0CFEA;color: #10609f;font-size: 16px;box-sizing: border-box;line-height: 35px;background: #c3e6f5;}
+  .module_tabs>ul{overflow: hidden;margin: 0;padding: 0}
+  .module_tabs>ul>li{float: left;list-style: none;padding: 0 10px;box-sizing: border-box;height: 35px;}
+  .module_tabs>ul>li.active{background: #fff;border-top: 2px solid #257aba;border-left: 1px solid #9FCFEA;border-right: 1px solid #9FCFEA;}
+  .module_tabs>ul>li:first-child{border-left: 0}
+  .module_tabs>ul>span{float: right;font-size: 14px;margin-right: 10px;text-decoration: underline;cursor: pointer;}
+  .content_center_top{text-align: center;margin-top: 20px}
+  .content_center_top>div{display: inline-block;}
+  .content_center_top>div>div{float: left;font-size: 0;padding: 0 5px;}
+  .content_center_top>div>div>span{font-size: 15px;color: #1A649B}
+  .content_center_top>div>div>div{display: inline-block;border-bottom: 1px solid #A7D5EC;font-size: 14px;padding: 0 2px;}
+  .orange{color: #E34D45;font-size: 17px}
+  .header_right{float: right;height: 100%;padding-right: 15px;}
+  .header_right>select{border-radius: 3px;-webkit-appearance: none;width: 170px;color: #1070BF;height: 32px;box-sizing: border-box;
+    font-size: 14px;border: 1px solid #7BBCD5;outline: none;padding-right: 5px;padding-left: 15px;background-color: #fff;
+    background-image:url(images/arrow.png);background-repeat: no-repeat;background-position: right calc(10px) center;margin-top: 6px;}
+  .header_right>button{border: none;background-color: #3ab5fb;border-radius: 3px;color: #fff;background-image: url(images/search.png);
+    background-repeat: no-repeat;background-position: 15px 11px;height: 32px;width: 80px;margin-top: 6px;text-indent: 15px;cursor: pointer;}
+  .header_right>span{color: #fff;font-size: 14px}
+  ::-webkit-scrollbar {width: 8px;height: 10px;background-color: #d6dde2;}
+  ::-webkit-scrollbar-track {-webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);border-radius: 8px;background-color: #d6dde2;}
+  ::-webkit-scrollbar-thumb {border-radius: 8px;-webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);background-color: #4c89b6;}
+</style>
+</html>

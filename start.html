@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+<canvas id='canvas'></canvas>
+	<script>
+		var canvas = document.getElementById('canvas');
+    canvas.width = 800;
+    canvas.height = 800;
+    var c = canvas.getContext('2d');
+    c.beginPath();
+    for (var i = 0; i < 5; i ++) {
+      c.lineTo(Math.cos((18 + i * 72) / 180 * Math.PI) * 300 + 400, 
+      -Math.sin((18 + i * 72) / 180 * Math.PI) * 300 + 400);
+      c.lineTo(Math.cos((54 + i * 72) / 180 * Math.PI) * 150 + 400, 
+      -Math.sin((54 + i * 72) / 180 * Math.PI) * 150 + 400);
+    }
+    c.closePath();
+    c.lineWidth = 10;
+    c.lineStyle = '#000';
+    c.stroke();
+	</script>
+</body>
+</html>

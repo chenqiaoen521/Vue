@@ -1,0 +1,93 @@
+.icon_user{
+  width: 18px;
+  height: 18px;
+  background: url('images/login/user.png') no-repeat;
+}
+.icon_account{
+  width: 16px;
+  height: 16px;
+  background: url('images/login/account.png') no-repeat;
+}
+.icon_set{
+  width: 18px;
+  height: 18px;
+  background: url('images/login/set.png') no-repeat;
+}
+.icon_edit{
+  width: 18px;
+  height: 18px;
+  background: url('images/login/editor-password.png') no-repeat;
+}
+.icon_logout{
+  width: 18px;
+  height: 18px;
+  background: url('images/login/logout.png') no-repeat;
+}
+.icon_skin{
+  width: 18px;
+  height: 18px;
+  background: url('images/login/skin.png') no-repeat;
+}
+.icon_password{
+  width: 16px;
+  height: 16px;
+  background: url('images/login/password.png') no-repeat;
+}
+.icon_close{
+  width: 18px;
+  height: 18px;
+  background: url('images/home/close.png');
+}
+.icon_editor{
+  width: 12px;
+  height: 11px;
+  margin-right: 4px;
+ background: url('images/roles/editor.png');
+}
+.icon_delete{
+  width: 12px;
+  height: 11px;
+  margin-right: 4px;
+  background: url('images/roles/delete.png');
+}
+.icon{
+  display: inline-block;
+  margin-right: 10px;
+  vertical-align: middle;
+}
+.caret-up{
+  width:0;
+  height:0;
+  position:relative;
+  top:-13px;
+  border-left:7px solid transparent;
+  border-right:7px solid transparent;
+  border-bottom: 7px solid #ddd;
+}
+.caret-down{
+  width:0;
+  height:0;
+  position:relative;
+  top:13px;
+  border-left:7px solid transparent;
+  border-right:7px solid transparent;
+  border-top: 7px solid #ddd;
+}
+.caret{
+  margin-left: 10px;
+}
+.tree-close{
+  width:14px;
+  height:14px;
+  background-image: url("images/home/treeOpen-1.png");
+}
+.tree-open{
+  width:14px;
+  height:14px;
+  background-image: url("images/home/treeClose-2.png");
+}
+.search{
+  width:14px;
+  height:14px;
+  background-image: url("images/home/search.png");
+}

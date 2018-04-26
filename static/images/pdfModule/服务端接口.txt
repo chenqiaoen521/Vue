@@ -1,0 +1,112 @@
+接口说明：证据材料智能分组推荐
+接口名称：/zjclfz/ajzjcln/getrecommendgroupinfo
+请求方式：GET
+传入参数：ajxxbh（必填）传入ajxxbh
+	  ajzjclbh（必填）传入ajzjclbh
+
+格式：字符串（两个）
+返回值：json数组
+
+-------------------------------------
+
+接口说明：保存证据材料智能分组推荐
+接口名称：/zjclfz/ajzjcln/getrecommendgroupinfo
+请求方式：POST
+传入参数：
+	sarybh;
+	zjclzhmbbh;
+	zjfzmc;
+	ajxxbh;
+	zjsl;
+	ajzjclbh;
+	zjfzbh;
+
+格式：数组对象
+返回值：json
+
+
+-------------------------------------
+
+接口说明：获取分组图片数据信息
+接口名称：/zjscn/ajzjclfytp/GetGroupImagesInfo
+请求方式：GET
+传入参数：ajxxbh（必填）传入ajxxbh
+	  ajzjclbh（必填）传入ajzjclbh
+	  ksys （必填）传入ksys ，即传入开始页
+	  jsys（必填）传入jsys，即传入结束页
+	  newwidth（必填）传入newwidth，即传入新的图片宽度
+	  newheight（必填）传入newheight，即传入新的图片宽度
+
+格式：6个参数分开
+返回值：json数组
+
+
+-------------------------------------
+
+接口说明：获取当前材料页图片信息
+接口名称：/zjscn/ajzjclfytp/GetMaterialPageImage
+请求方式：GET
+传入参数：ajxxbh（必填）传入ajxxbh
+	  ajzjclbh（必填）传入ajzjclbh
+	  ajzjclfy（必填）传入ajzjclfy
+
+格式：3个参数分开
+返回值：json
+
+
+-------------------------------------
+
+
+接口说明：添加证据标识
+接口名称：/zjscn/zjbzhu/addmaterialsign
+请求方式：GET
+传入参数： zjbzlxbh;
+	   ajzjclfy;
+	   zjbzmc;
+	   zjbzwz;
+	   ajxxbh;
+	   zjbztppath  传入base64的二进制码;
+
+格式：对象
+返回值：json
+
+
+-------------------------------------
+
+接口说明：添加证据关联情节
+接口名称：/zjscn/addzjglqj/addmaterialplot
+请求方式：POST
+传入参数： 
+	   qjmc;
+   	   ajfzssqkbh;
+   	   sarybh;
+   	   ajzjclfy;
+   	   qj_dm;
+   	   qj_mc;
+   	   cltp;
+   	   qjsm;
+
+格式：数组对象
+返回值：json
+
+
+
+-------------------------------------
+
+
+
+接口说明：获取当前证据标注信息
+接口名称：/zjscn/hqdqbzbzxx/GetMaterialSigns
+请求方式：GET
+传入参数： ajxxbh（必填）传入ajxxbh
+	  ajzjclfy（必填）传入ajzjclfy
+	  isdealtp（必填）传入isdealtp 该字段是用来判断当前结果是否需要返回图片数据，传0则不会返回图片数据，若需要图片数据则传XT_ZHGS_BZLX_N对应类型的zjbzlxbh
+
+格式：对象
+返回值：json数组
+
+
+
+
+
+

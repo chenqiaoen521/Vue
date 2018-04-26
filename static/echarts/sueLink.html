@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>起诉环节</title>
+</head>
+<link rel="stylesheet" href="caseJs/jquery-easyui-1.5.3/themes/icon.css">
+<link rel="stylesheet" href="caseJs/jquery-easyui-1.5.3/themes/material/easyui.css">
+<script type="text/javascript" src="caseJs/echarts.js"></script>
+<script type="text/javascript" src="caseJs/jquery-1.10.1.min.js"></script>
+<script type="text/javascript" src="caseJs/jquery-easyui-1.5.3/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="caseJs/jquery-easyui-1.5.3/locale/easyui-lang-zh_CN.js"></script>
+<body onload="init()">
+
+  <div class="caseFactStory">
+    <div class="header_div">
+      <span class="header_title">起诉情况</span>
+      <div class="header_right">
+        <button class="backBtn" onclick="statisticAnalysisType()">返回</button>
+      </div>
+    </div>
+    <div class="echarts_div">
+
+      <div class="row">
+
+        <div class="tr">
+          <div class="trHead"><span>起诉环节</span></div>
+          <div class="echart_containter">
+            <div id="myChartsOne"></div>
+          </div>
+        </div>
+
+        <div class="tr">
+          <div class="trHead"><span>不诉情况占比</span></div>
+          <div class="echart_containter">
+            <div id="myCharts_2" style="width: 100%;height: 100%" ></div>
+          </div>
+        </div>
+
+      </div>
+
+
+      <div class="row">
+        <div class="trHead"><span>起诉与不起诉审结占比</span></div>
+        <div class="echart_containter">
+          <div class="biaoxian">
+            <div><span></span>省平均不诉率</div>
+            <div><span></span>地区平均不诉率</div>
+          </div>
+          <div id="myCharts_3"></div>
+      </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+<script>
+  var dataIndex = 0
+  var barDataOneFunction = {
+    formatter1: function (e) {
+      var str = ''
+      str = e.data + '件'
+      return str
+    },
+    formatter2: function (e) {
+      var str = ''
+      str = e.data + '人'
+      return str
+    },
+    xAxisFormatter: function (value) {
+      return value.split('').join('\n')
+    }
+  }
+  var rollPieData = {
+    radius : [100, 80],
+    seriesData: [
+      {
+        title: '审查起诉审结',
+        center : ['20%', '50%'],
+        data : [
+          {name:'其他', value:46},
+          {name:'审查起诉审结', value:54}
+        ]
+      },
+      {
+        title: '审结起诉',
+        center : ['50%', '50%'],
+        data : [
+          {name:'其他', value:79},
+          {name:'审结起诉', value:21}
+        ]
+      },
+      {
+        title: '生效裁判合计',
+        center : ['80%', '50%'],
+        data : [
+          {name:'其他', value:11},
+          {name:'生效裁判合计', value:89}
+        ]
+      }
+    ]
+  }
+  var barData = {
+    xAxisData: ['甘孜州','凉山州','阿坝州','成都市','德阳市','广元市','南充市','眉山市','乐山市','攀枝花市','巴中市','广安市'],
+    legendData: ['省平均不诉率', '地区平均不诉率'],
+    lengedShow: false,
+    yaxisPosition: 'right',
+    MarkLineData:  [
+      {
+        name: '平均线',
+        // 支持 'average', 'min', 'max'
+        type: 'average',
+        itemStyle:{normal: {color: '#F05C33'}}
+      },
+      {
+        name: 'Y 轴值为 100 的水平线',
+        yAxis: 100
+      },
+      [
+        {
+          // 起点和终点的项会共用一个 name
+          name: '最小值到最大值',
+          type: 'min'
+        },
+        {
+          type: 'max'
+        }
+      ],
+      [
+        {
+          name: '两个坐标之间的标线',
+          coord: [10, 20]
+        },
+        {
+          coord: [20, 30]
+        }
+      ], [{
+        // 固定起点的 x 像素位置，用于模拟一条指向最大值的水平线
+        yAxis: 'max',
+        x: '90%'
+      }, {
+        type: 'max'
+      }],
+      [
+        {
+          name: '两个屏幕坐标之间的标线',
+          x: 100,
+          y: 100
+        },
+        {
+          x: 500,
+          y: 200
+        }
+      ]
+    ],
+    seriesData: [
+      {
+        name: '起诉与不起诉审结占比',
+        data: [52.0, 14.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3]
+      }
+    ]
+  }
+  var fullPieData = {
+    legendData: ['犯罪情节轻微不起诉','法定不起诉', '证据不足不起诉', '附条件不起诉'],
+    lengedShow: true,
+    seriesDataOne: [
+      {value:335, name:'犯罪情节轻微不起诉'},
+      {value:221, name:'法定不起诉'},
+      {value:158, name:'证据不足不起诉'},
+      {value:99, name:'附条件不起诉'}
+    ]
+  }
+  function init(){
+    var event = new CustomEvent('sueLinkOnload', {detail: {data: 'init'}})
+    window.parent.parent.window.dispatchEvent(event)
+  }
+  function setNode(data) {
+    dataIndex = data.index
+    data.data.barData.MarkLineData = [
+      {
+        name: '平均线',
+        // 支持 'average', 'min', 'max'
+        type: 'average',
+        itemStyle:{normal: {color: '#F05C33'}}
+      },
+      {
+        name: 'Y 轴值为 100 的水平线',
+        yAxis: 92.12,
+        itemStyle:{normal: {color: '#e6ca58'}}
+      }
+    ]
+    rollPie(data.data.rollPieData, 'myChartsOne', 'sueLink');
+    barPLT(data.data.barData, 'myCharts_3', barDataOneFunction);
+    fullPie(data.data.fullPieData, 'myCharts_2')
+  }
+  function statisticAnalysisType(){
+    var event = new CustomEvent('statisticAnalysisType', {detail: {index: dataIndex}})
+    window.parent.parent.window.dispatchEvent(event)
+  }
+</script>
+<script src="caseJs/echartsCompontents.js"></script>
+<style>
+  html,body{
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    font-family: '微软雅黑';
+  }
+  .caseFactStory{
+    width: calc(100% - 2px);
+    height: calc(100% - 2px);
+    border: 1px solid #A1CFEB;
+  }
+  .header_div{
+    width: 100%;
+    background: #4082C1;
+    height: 45px;
+  }
+  .echarts_div{
+    width: 100%;
+    box-sizing: border-box;
+    height: calc(100% - 45px);
+    padding: 20px 20px 0 20px;
+    background: #F2F8FD;
+  }
+  .header_title{
+    color: #fff;
+    border-left: 3px solid #fff;
+    padding-left: 10px;
+    margin-top: 11px;
+    margin-left: 15px;
+    display: inline-block;
+  }
+  .row{
+    height: calc(50% - 0px);
+    width: calc(100% - 0px);
+    border: 1px solid #A4D3ED;
+  }
+  .row:first-child{
+    margin-bottom: 20px;
+    height: calc(50% - 21px);
+    border: none;
+  }
+  .row .tr {
+    border: 1px solid #A4D3ED;
+    height: 100%;
+    float: left;
+    width: 60%;
+  }
+  .row .tr:last-child {
+    width: calc(40% - 24px);
+    margin-left: 20px;
+  }
+  .trHead{
+    height: 38px;
+    box-sizing: border-box;
+    line-height: 38px;
+    padding-left: 20px;
+    border-bottom: 1px solid #A4D3ED;
+    background-color: #C3E6F5;
+    width: 100%;
+  }
+  .trHead span{
+    color: #10609f;
+    font-family: "Microsoft Yahei";
+    font-size: 16px;
+  }
+  .echart_containter{
+    padding: 25px 25px 0 0;
+    height: calc(100% - 63px);
+    width: calc(100% - 25px);
+    position: relative;
+  }
+  #myChartsOne, #myCharts_2, #myCharts_3{
+    width: 100%;
+    height: 100%;
+  }
+  .header_right{float: right;height: 100%;padding-right: 15px;}
+  .header_right>select{border-radius: 3px;-webkit-appearance: none;width: 120px;color: #1070BF;height: 32px;box-sizing: border-box;
+    font-size: 14px;border: 1px solid #7BBCD5;outline: none;padding-right: 5px;padding-left: 15px;background-color: #fff;
+    background-image:url(images/arrow.png);background-repeat: no-repeat;background-position: right calc(10px) center;margin-top: 6px;}
+  .header_right>button{border: none;background-color: #3ab5fb;border-radius: 3px;color: #fff;background-image: url(images/search.png);
+    background-repeat: no-repeat;background-position: 15px 11px;height: 32px;width: 80px;margin-top: 6px;text-indent: 15px;cursor: pointer;}
+  .header_right>span{color: #fff;font-size: 14px}
+  ::-webkit-scrollbar {width: 8px;height: 10px;background-color: #d6dde2;}
+  ::-webkit-scrollbar-track {-webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);border-radius: 8px;background-color: #d6dde2;}
+  ::-webkit-scrollbar-thumb {border-radius: 8px;-webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);background-color: #4c89b6;}
+  .header_right .backBtn{background-image: none;text-indent: 0;}
+  .biaoxian{position: absolute;
+    top: 20px;
+    right: 20px;z-index: 2}
+  .biaoxian>div{
+    float: left;
+    cursor: pointer;
+    overflow: hidden;
+  }
+  .biaoxian>div>span{
+    display: inline-block;
+    width: 50px;
+    margin-top: 10px;
+    margin-left: 20px;
+    margin-right: 10px;
+  }
+  .biaoxian>div:first-child>span{
+    border-bottom: 2px dashed #F05C33;
+    float: left;
+  }
+  .biaoxian>div:last-child>span{
+    border-bottom: 2px dashed #e6ca58;
+    float: left;
+  }
+</style>
+</html>

@@ -1,0 +1,54 @@
+@header-bg:#2187c5;/*header处背景色*/
+@headerList-current:#0e74b2;/*当前模块背景色*/
+@slider-color:#343434;/*侧边栏字体颜色*/
+@slider-bg:#a2cfea;/*侧边栏背景颜色*/
+@content-bg:#EAF2F5;/*主体内容背景色*/
+@theme-bg:#daecf3;/*主体中标题背景色*/
+@menu-color:#343434;
+.header-bg{
+  background-color: @header-bg;
+}
+
+.slider-change{
+  background-color: @slider-bg;
+  color: @slider-color;
+  background-image:none;
+}
+.menu-content{
+background-color: @content-bg;
+}
+.roleTitle,.userTitle{
+  background-color: @theme-bg;
+}
+.menu-color{
+  color: @menu-color;
+}
+.submenu a{
+  .menu-color;
+}
+.menu{
+  border-bottom:1px solid #86b8d9;
+}
+.slider{
+  float: left;
+  background: none;
+}
+.appheader-modulelist li a.router-link-active {
+  background-color: #0e74b2;
+  border: 1px solid #3298d9;
+  border-bottom: none;
+}
+.appheader-modulelist li a:hover {
+  background-color: #0e74b2;
+  border-bottom: none;
+}
+.appheader-modulelist li a {
+  border-bottom: 5px solid #0e74b2;
+}
+.submenu a.router-link-active{
+  color: #349adb;
+  background-color: #349adb;
+}
+.manager{
+  background-color: #0e74b2;
+}

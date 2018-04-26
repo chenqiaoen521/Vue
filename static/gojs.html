@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en" style="height: 100%">
+<head>
+  <meta charset="UTF-8">
+  <title>gojs</title>
+  <script type="text/javascript" src="go.js"></script>
+  <style>
+
+    ::-webkit-scrollbar {
+      width: 0px;
+      height: 0px;
+      background-color: #d6dde2;
+    }
+
+
+    /*定义滚动条轨道 内阴影+圆角*/
+
+    ::-webkit-scrollbar-track {
+      -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      background-color: #d6dde2;
+    }
+
+    /*定义滑块 内阴影+圆角*/
+
+    ::-webkit-scrollbar-thumb {
+      border-radius: 8px;
+      -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
+      background-color: #4c89b6;
+    }
+    canvas{
+      outline: none!important;
+    }
+  </style>
+</head>
+<body onload="init()" style="height: 100%;margin: 0">
+<div id="myDiagram1" style="width: 100%; height: 100%"></div>
+<!--<button onclick="addNode()">添加节点</button>-->
+<!--<button onclick="deleteNode()">删除节点</button>-->
+</body>
+<script>
+  function init() {
+    var event = new CustomEvent('gojsOnload', {detail: {data: 'init'}})
+    window.parent.parent.window.dispatchEvent(event)
+
+    if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+    var $ = go.GraphObject.make;  // for conciseness in defining templates
+
+    myDiagram =
+      $(go.Diagram, "myDiagram1",
+        // must name or refer to the DIV HTML element
+        {
+          initialContentAlignment: go.Spot.Center,
+          contentAlignment: go.Spot.Center,  // align document to the center of the viewport
+          layout: $(go.LayeredDigraphLayout,
+            {
+              // radius: 100,  // minimum radius
+              // spacing: 0,   // circular nodes will touch each other
+              // // nodeDiameterFormula: go.CircularLayout.Circular,  // assume nodes are circular
+              // startAngle: 270  // first node will be at top
+            }),
+
+        }
+      );
+
+    var bigfont = "12pt helvetica, arial, sans-serif";
+    var yellowgrad = $(go.Brush, "Linear", { 0: "#C3DAE8", 1: "#C3DAE8"});
+
+    // define each Node's appearance
+    myDiagram.nodeTemplate =
+      $(go.Node, "Auto",
+        { isTreeExpanded: false },
+        // define the node's outer shape, which will surround the TextBlock
+        $(go.Shape, "RoundedRectangle",
+          { fill: yellowgrad, stroke: "#8EA7BD",strokeWidth: 1,
+            portId: "",fromLinkable: false, toLinkable: false, cursor: "pointer"
+          }),
+        $(go.TextBlock, "Page",
+          new go.Binding("text", "text").makeTwoWay(),
+          { margin: new go.Margin(8, 20, 5, 20),
+            font: bigfont,fromLinkable: false, toLinkable: false,
+            editable: false, stroke: "#1E5685", background: "#C3DAE8",textAlign: "center"
+          }),
+        {
+          width:180,
+          mouseEnter:function(e,obj){
+//            console.log(e);
+//            console.log(obj);
+          },
+          click:function(e,obj){
+            nodeClick(e,obj);
+          }
+        }
+      );
+
+    myDiagram.layout = $(go.TreeLayout);
+    // After the nodes and links have been created,
+    // expand each of the tree roots to 3 levels deep.
+    myDiagram.addDiagramListener("InitialLayoutCompleted", function(e) {
+      e.diagram.findTreeRoots().each(function(r) { r.expandTree(3); });
+    });
+
+    myDiagram.nodeTemplateMap.add("Start",
+      $(go.Node, "Auto",
+        $(go.Shape, "Rectangle",
+          { fill: 'rgba(0,0,0,0)', stroke: "block",strokeWidth: 0,
+            portId: "",fromLinkable: false, cursor: "pointer"
+          }),
+        $(go.Picture, "images/11.png", { background: "rgba(0,0,0,0)",width:120,height:148}),
+        $(go.TextBlock, "Page",
+          { textAlign: "center",overflow:'hidden', margin:new go.Margin(175,0,0,0),
+            editable: false, stroke: "#333", font: bigfont,
+          },
+          new go.Binding("text", "text").makeTwoWay()),
+        {
+          width:120,
+          height:190,
+          click:function(e,obj){
+            nodeClick(e,obj);
+          }
+        }
+      ));
+
+    myDiagram.nodeTemplateMap.add("childrenNode",
+      $(go.Node, "Auto",
+        { isTreeExpanded: false },
+        // define the node's outer shape, which will surround the TextBlock
+        $(go.Shape, "RoundedRectangle",
+          { fill: yellowgrad, stroke: "#8EA7BD",strokeWidth: 1,
+            portId: "",fromLinkable: false, toLinkable: false, cursor: "pointer"
+          }),
+        $(go.TextBlock, "Page",
+          new go.Binding("text", "text").makeTwoWay(),
+          { margin: new go.Margin(8, 20, 5, 20),textAlign: "center",
+            font: bigfont,fromLinkable: false, toLinkable: false,
+            editable: false, stroke: "#1E5685", background: "#C3DAE8"
+          }),
+        $(go.Picture,
+          { margin: new go.Margin(0, 0, 0, 153),cursor:'pointer'},
+          { click: expandNode},
+          new go.Binding("source", "isTreeExpanded", function (isTreeExpanded, node) {
+            return !node.part.isTreeExpanded ? "images/open.png" : "images/close.png";
+          }).ofObject()
+        ),
+        //$(go.Picture,
+        //        { margin: new go.Margin(0, 0, 0, -85), cursor:'pointer', width:15, height:15},
+        //        { click: expandNode},
+        //        new go.Binding("source", "isTreeExpanded", function (isTreeExpanded, node) {
+        //            if(node.part.data.flag == '3'){
+        //                return !node.part.data.active ? "images/radio1.png" : "images/radio2.png";
+        //            }
+        //        }).ofObject()
+        //),
+        {
+          width:180,
+          mouseEnter:function(e,obj){
+          },
+          click:function(e,obj){
+            nodeClick(e,obj);
+          }
+        }
+      ));
+
+
+    myDiagram.linkTemplate =
+      $(go.Link,
+        { routing: go.Link.Orthogonal,corner: 10 }, // 连线为方正的格式
+        $(go.Shape,{stroke: "#8EA7BB",strokeWidth: 1}),
+        $(go.Panel, "Auto",
+          $(go.TextBlock,  // the label
+            { textAlign: "center",
+              font: "10pt helvetica, arial, sans-serif",
+              stroke: "#555555",
+              margin: 4
+            },
+            new go.Binding("text", "text"))
+        )
+      );
+
+    // create the model for the concept map
+    var nodeDataArray = [];
+    var linkDataArray = [];
+
+    nodeDataArray.forEach(function(n){
+      n.active = false;
+    });
+    linkDataArray.forEach(function(l){
+      nodeDataArray.forEach(function(n){
+        if(n.key == l.from && n.key != 0){
+          n.category = 'childrenNode'
+        }
+      });
+    });
+    myDiagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
+    myOverview =
+      $(go.Overview, "myOverview1",  // the HTML DIV element for the Overview
+        { observed: myDiagram, contentAlignment: go.Spot.Center });
+
+  }
+  function addNode(){
+    var node = JSON.parse(myDiagram.model.toJson());
+    node.nodeDataArray.push({
+      key:node.nodeDataArray.length,
+      text:'text'
+    });
+    myDiagram.model = go.Model.fromJson(JSON.stringify(node));
+  }
+  function deleteNode () {
+    var node = JSON.parse(myDiagram.model.toJson());
+    node.nodeDataArray.splice(0, 1)
+    myDiagram.model = go.Model.fromJson(JSON.stringify(node));
+    var event = new CustomEvent('deleteNode');
+    window.parent.parent.window.dispatchEvent(event)
+  }
+  function setNode(nodeDataArray,linkDataArray){
+    var node = JSON.parse(myDiagram.model.toJson());
+    nodeDataArray.forEach(function(n){
+      n.active = false;
+    });
+    linkDataArray.forEach(function(l){
+      nodeDataArray.forEach(function(n){
+        if(n.key != 0 && n.key == l.from){
+          n.category = 'childrenNode'
+        }
+        if(n.flag == 2){
+          n.isTreeExpanded = false
+        }
+      });
+    });
+    node.nodeDataArray = nodeDataArray;
+    node.linkDataArray = linkDataArray;
+    myDiagram.model = go.Model.fromJson(JSON.stringify(node));
+  }
+  function correlationNode(){
+
+  }
+  function expandNode(e,obj){
+    var node = obj.part;
+    node.isTreeExpanded = !node.isTreeExpanded;
+  }
+  function nodeClick(e,obj){
+    var event = new CustomEvent('nodeClick', {detail: {data: JSON.stringify(obj.part.data)}})
+    window.parent.parent.window.dispatchEvent(event)
+  }
+</script>
+</html>

@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>案件事实情节</title>
+</head>
+<link rel="stylesheet" href="caseJs/jquery-easyui-1.5.3/themes/icon.css">
+<link rel="stylesheet" href="caseJs/jquery-easyui-1.5.3/themes/material/easyui.css">
+<script type="text/javascript" src="caseJs/echarts.js"></script>
+<script type="text/javascript" src="caseJs/jquery-1.10.1.min.js"></script>
+<script type="text/javascript" src="caseJs/jquery-easyui-1.5.3/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="caseJs/jquery-easyui-1.5.3/locale/easyui-lang-zh_CN.js"></script>
+<body  onload="init()">
+
+  <div class="caseFactStory">
+    <div class="header_div">
+      <span class="header_title">案件事实情节</span>
+      <div class="header_right">
+        <button class="backBtn" onclick="statisticAnalysisType()">返回</button>
+      </div>
+    </div>
+    <div class="echarts_div">
+
+      <div class="row">
+
+        <div class="tr">
+          <div class="trHead"><span>总则要素占比</span></div>
+          <div class="echart_containter">
+            <div id="myChartsOne"></div>
+          </div>
+        </div>
+
+        <div class="tr">
+          <div class="trHead"><span>分罪类别占比</span></div>
+          <div class="echart_containter">
+            <div class="selectBox">
+              <select id="flzm" onchange="selectChange(value)">
+                <option value="正当防卫">正当防卫</option>
+                <option value="紧急避险">紧急避险</option>
+                <option value="防卫过当">防卫过当</option>
+                <option value="自首">自首</option>
+                <option value="立功">立功</option>
+                <option value="坦白">坦白</option>
+                <option value="自愿认罪">自愿认罪</option>
+                <option value="退赃/退赔">退赃/退赔</option>
+                <option value="取得被害人谅解">取得被害人谅解</option>
+                <option value="与被害人和解">与被害人和解</option>
+                <option value="犯罪既遂">犯罪既遂</option>
+                <option value="犯罪未遂">犯罪未遂</option>
+                <option value="犯罪中止">犯罪中止</option>
+                <option value="犯罪预备">犯罪预备</option>
+                <option value="致人死亡">致人死亡</option>
+              </select>
+            </div>
+            <div id="myCharts_2" style="width: 100%;height: 100%" ></div>
+          </div>
+        </div>
+
+      </div>
+
+
+      <div class="row">
+        <div class="trHead"><span>案件情节排名</span></div>
+        <div class="echart_containter">
+          <div id="myCharts_3"></div>
+      </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+<script>
+  var dataIndex = 0
+  var barDataFunction = {
+    xAxisFormatter: function (value) {
+      return value.split('').join('\n')
+    }
+  }
+  var rollPieData = {
+    labelTop : {
+      normal : {
+        color: '#126EB2',
+        label : {
+          show : true,
+          position : 'center'
+        },
+        labelLine : {
+          show : false
+        }
+      },
+      emphasis: {
+        color: 'rgba(0,0,0,0)'
+      }
+    },
+    labelBottom : {
+      normal : {
+        color: '#BBDCEB',
+        label : {
+          show : true,
+          position : 'center',
+          formatter : '{b}',
+          textStyle: {
+            baseline : 'bottom',
+            color: '#E16B1C'
+          }
+        },
+        labelLine : {
+          show : false
+        }
+      }
+    },
+    labelFromatter: {
+      normal : {
+        label : {
+          formatter : function (params){
+            return 100 - params.value + '件'
+          },
+          textStyle: {
+            baseline : 'top'
+          }
+        }
+      }
+    },
+    radius: [100, 85]
+  }
+  var barData = {
+    xAxisData: ['正当防卫','紧急避险','防卫过当','自首','立功','坦白','自愿认罪','退赃/退赔','取得被害人谅解','与被害人和解','犯罪既遂','犯罪未遂','犯罪中止', '犯罪预备', '致人死亡'],
+    legendData: ['分类罪名占比'], //
+    yaxisPosition: 'left', // y轴位置
+    markLineArr: [
+      {type : 'max', name: '最大值',
+        itemStyle: {
+          normal: {
+            color: '#F1CE2F'
+          },
+          lineStyle: {
+            type: 'solid'
+          }
+        }
+      },
+      {type : 'average', name: '平均值', itemStyle: {normal: {color: '#ee5e32'}}}
+    ],
+    lengedShow: false, // 是否显示图例
+    seriesDataOne: [25, 14, 13, 25, 14, 13, 25, 14, 13, 25, 14, 13, 25, 14, 13]
+  }
+  var fullPieData = {
+    legendData: ['犯罪情节轻微不起诉','法定不起诉', '证据不足不起诉', '附条件不起诉'],
+    lengedShow: false, // 是否显示图例
+    seriesDataOne: [
+      {value:335, name:'犯罪情节轻微不起诉'},
+      {value:221, name:'法定不起诉'},
+      {value:158, name:'证据不足不起诉'},
+      {value:99, name:'附条件不起诉'}
+    ]
+  }
+  function init(){
+    var event = new CustomEvent('caseFactStoryOnload', {detail: {data: 'init'}})
+    window.parent.parent.window.dispatchEvent(event)
+  }
+  function setNode(data) {
+    dataIndex = data.index
+    fullPie(data.data.rollPieDataOne, 'myChartsOne');
+    barPLT(data.data.barData, 'myCharts_3', barDataFunction);
+    fullPie(data.data.fullPieData, 'myCharts_2')
+  }
+  function selectChange(value) {
+    if(value == '正当防卫'){
+      fullPieData.seriesDataOne = [
+        {value:56, name:'正当防卫'},
+        {value:221, name:'全部'}
+      ]
+      fullPie(fullPieData, 'myCharts_2')
+    }else if(value == '紧急避险'){
+      fullPieData.seriesDataOne = [
+        {value:5, name:'紧急避险'},
+        {value:55, name:'全部'}
+      ]
+      fullPie(fullPieData, 'myCharts_2')
+    }else if(value == '防卫过当'){
+      fullPieData.seriesDataOne = [
+        {value:7, name:'防卫过当'},
+        {value:55, name:'全部'}
+      ]
+      fullPie(fullPieData, 'myCharts_2')
+    }else if(value == '自首'){
+      fullPieData.seriesDataOne = [
+        {value:5, name:'自首'},
+        {value:14, name:'全部'}
+      ]
+      fullPie(fullPieData, 'myCharts_2')
+    }else if(value == '立功'){
+      fullPieData.seriesDataOne = [
+        {value:97, name:'立功'},
+        {value:335, name:'全部'}
+      ]
+      fullPie(fullPieData, 'myCharts_2')
+    }else if(value == '坦白'){
+      fullPieData.seriesDataOne = [
+        {value:87, name:'坦白'},
+        {value:200, name:'全部'}
+      ]
+      fullPie(fullPieData, 'myCharts_2')
+    }else if(value == '自愿认罪'){
+      fullPieData.seriesDataOne = [
+        {value:120, name:'自愿认罪'},
+        {value:354, name:'全部'}
+      ]
+      fullPie(fullPieData, 'myCharts_2')
+    }else if(value == '退赃/退赔'){
+      fullPieData.seriesDataOne = [
+        {value:5, name:'退赃/退赔'},
+        {value:31, name:'全部'}
+      ]
+      fullPie(fullPieData, 'myCharts_2')
+    }else if(value == '取得被害人谅解'){
+      fullPieData.seriesDataOne = [
+        {value:145, name:'取得被害人谅解'},
+        {value:300, name:'全部'}
+      ]
+      fullPie(fullPieData, 'myCharts_2')
+    }else if(value == '与被害人和解'){
+      fullPieData.seriesDataOne = [
+        {value:80, name:'与被害人和解'},
+        {value:224, name:'全部'}
+      ]
+      fullPie(fullPieData, 'myCharts_2')
+    }else if(value == '犯罪既遂'){
+      fullPieData.seriesDataOne = [
+        {value:124, name:'犯罪既遂'},
+        {value:354, name:'全部'}
+      ]
+      fullPie(fullPieData, 'myCharts_2')
+    }else if(value == '犯罪未遂'){
+      fullPieData.seriesDataOne = [
+        {value:123, name:'犯罪未遂'},
+        {value:354, name:'全部'}
+      ]
+      fullPie(fullPieData, 'myCharts_2')
+    }else if(value == '犯罪中止'){
+      fullPieData.seriesDataOne = [
+        {value:2, name:'犯罪中止'},
+        {value:34, name:'全部'}
+      ]
+      fullPie(fullPieData, 'myCharts_2')
+    }else if(value == '犯罪预备'){
+      fullPieData.seriesDataOne = [
+        {value:22, name:'犯罪预备'},
+        {value:44, name:'全部'}
+      ]
+      fullPie(fullPieData, 'myCharts_2')
+    }else if(value == '致人死亡'){
+      fullPieData.seriesDataOne = [
+        {value:11, name:'致人死亡'},
+        {value:35, name:'全部'}
+      ]
+      fullPie(fullPieData, 'myCharts_2')
+    }
+  }
+  function statisticAnalysisType(){
+    var event = new CustomEvent('statisticAnalysisType', {detail: {index: dataIndex}})
+    window.parent.parent.window.dispatchEvent(event)
+  }
+</script>
+<script src="caseJs/echartsCompontents.js"></script>
+<style>
+  html,body{
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    font-family: '微软雅黑';
+  }
+  *{
+    font-family: '微软雅黑';
+  }
+  .caseFactStory{
+    width: calc(100% - 2px);
+    height: calc(100% - 2px);
+    border: 1px solid #A1CFEB;
+  }
+  .header_div{
+    width: 100%;
+    background: #4082C1;
+    height: 45px;
+  }
+  .echarts_div{
+    width: 100%;
+    box-sizing: border-box;
+    height: calc(100% - 45px);
+    padding: 20px 20px 0 20px;
+    background: #F2F8FD;
+  }
+  .header_title{
+    color: #fff;
+    border-left: 3px solid #fff;
+    padding-left: 10px;
+    margin-top: 11px;
+    margin-left: 15px;
+    display: inline-block;
+  }
+  .row{
+    height: calc(50% - 15px);
+    width: calc(100% - 0px);
+    border: 1px solid #A4D3ED;
+  }
+  .row:first-child{
+    margin-bottom: 20px;
+    height: calc(50% - 21px);
+    border: none;
+  }
+  .row .tr {
+    border: 1px solid #A4D3ED;
+    height: 100%;
+    float: left;
+    width: 60%;
+  }
+  .row .tr:last-child {
+    width: calc(40% - 24px);
+    margin-left: 20px;
+  }
+  .trHead{
+    height: 38px;
+    box-sizing: border-box;
+    line-height: 38px;
+    padding-left: 20px;
+    border-bottom: 1px solid #A4D3ED;
+    background-color: #C3E6F5;
+    width: 100%;
+  }
+  .trHead span{
+    color: #10609f;
+    font-family: "Microsoft Yahei";
+    font-size: 16px;
+  }
+  .echart_containter{
+    padding: 25px 25px 0 0;
+    height: calc(100% - 63px);
+    width: calc(100% - 25px);
+    background: #fff;
+  }
+  .echart_containter .selectBox select{
+    border-radius: 3px;
+    -webkit-appearance: none;
+    width: 50%;
+    margin-left: 20px;
+    color: #1070BF;
+    height: 32px;
+    box-sizing: border-box;
+    font-size: 14px;
+    border: 1px solid #7BBCD5;
+    outline: none;
+    padding-right: 5px;
+    padding-left: 15px;
+    background:url(images/arrow.png) no-repeat right calc(10px) center;
+  }
+  .echart_containter .selectBox select option{
+    padding-left: 15px;
+    height: 32px;
+    line-height: 32px;
+    display: inline-block;
+    color: #666
+  }
+  #myChartsOne, #myCharts_2, #myCharts_3{
+    width: 100%;
+    height: 100%;
+  }
+
+  .header_right{float: right;height: 100%;padding-right: 15px;}
+  .header_right>select{border-radius: 3px;-webkit-appearance: none;width: 120px;color: #1070BF;height: 32px;box-sizing: border-box;
+    font-size: 14px;border: 1px solid #7BBCD5;outline: none;padding-right: 5px;padding-left: 15px;background-color: #fff;
+    background-image:url(images/arrow.png);background-repeat: no-repeat;background-position: right calc(10px) center;margin-top: 6px;}
+  .header_right>button{border: none;background-color: #3ab5fb;border-radius: 3px;color: #fff;background-image: url(images/search.png);
+    background-repeat: no-repeat;background-position: 15px 11px;height: 32px;width: 80px;margin-top: 6px;text-indent: 15px;cursor: pointer;}
+  .header_right>span{color: #fff;font-size: 14px}
+  ::-webkit-scrollbar {width: 8px;height: 10px;background-color: #d6dde2;}
+  ::-webkit-scrollbar-track {-webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);border-radius: 8px;background-color: #d6dde2;}
+  ::-webkit-scrollbar-thumb {border-radius: 8px;-webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);background-color: #4c89b6;}
+  .header_right .backBtn{background-image: none;text-indent: 0;}
+</style>
+</html>

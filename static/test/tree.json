@@ -1,0 +1,47 @@
+[
+  {
+    "zjlbbh": 0,
+    "zjlbmc": null,
+    "jmlmc": "诉讼文书卷",
+    "jmlbh": "6E5D9D8450DD4CDA8EE51B4B65D21F36",
+    "open": false,
+    "checked": false,
+    "zjlbList":          [
+      {
+        "zjlbbh": 1,
+        "zjlbmc": "书证",
+        "jmlmc": null,
+        "jmlbh": null,
+        "open": false,
+        "checked": false,
+        "zjlbList": null
+      },
+      {
+        "zjlbbh": 10,
+        "zjlbmc": "目录",
+        "jmlmc": null,
+        "jmlbh": null,
+        "open": false,
+        "checked": false,
+        "zjlbList": null
+      }
+    ]
+  },
+  {
+    "zjlbbh": 0,
+    "zjlbmc": null,
+    "jmlmc": "证据材料卷",
+    "jmlbh": "632FAD3B2413401783A02A4B1C0B3F2F",
+    "open": false,
+    "checked": false,
+    "zjlbList": [         {
+      "zjlbbh": 11,
+      "zjlbmc": "其他证据材料",
+      "jmlmc": null,
+      "jmlbh": null,
+      "open": false,
+      "checked": false,
+      "zjlbList": null
+    }]
+  }
+]
