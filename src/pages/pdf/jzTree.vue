@@ -252,11 +252,11 @@ export default {
 <style scoped>
 .jztree{
   height: calc(100% - 34px);
-  margin-top: 30px;
+  background-color: #fff;
 }
 .js-input{
   width: 80%;
-  margin: 0 10%;
+  margin: 10px 10% 10px;
 }
 </style>
 <style>

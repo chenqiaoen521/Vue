@@ -39,8 +39,10 @@
         </div>
         <loading v-show="isload"></loading>
       </div>
-      <transition name="sdzqz">
-        <sliderTree v-show="sdzqz"></sliderTree>
+      <transition name="jzTreetran">
+        <div class="tree-wrapper">
+          <jz-tree></jz-tree>
+        </div>
       </transition>
     </div>
     <button id="changeModel" @click="changeModel" style="display: none"></button>
@@ -50,7 +52,7 @@
 <script>
   import vuex from 'vuex'
   import pdfTitle from './pdfTitle.vue'
-  import sliderTree from './sliderTree.vue'
+  import jzTree from './jzTree.vue'
   import loading from './loading'
   const pdf = vuex.createNamespacedHelpers('pdf')
   const ptzjsc = vuex.createNamespacedHelpers('ptzjsc')
@@ -61,7 +63,7 @@
       ...ptzjsc.mapState(['zjzyBtzth', 'evidExpand', 'evidGuide']),
       ...vuex.mapState(['model', 'pdfUrl', 'curNode', 'bmsah', 'dwbm', 'ajxxbh'])
     },
-    components: {pdfTitle, sliderTree, loading},
+    components: {pdfTitle, jzTree, loading},
     data () {
       return {
         showTextArea: false,
@@ -566,6 +568,15 @@
   }
 </script>
 <style scoped>
+.jzTreetran-enter,.jzTreetran-leave-to {
+  transform: translate3d(100%, 0, 0);
+}
+.jzTreetran-enter-to, .jzTreetran-leave {
+ transform: translate3d(0, 0, 0);
+}
+.jzTreetran-enter-active,.jzTreetran-leave-active{
+  transition: all 0.3s ease-in-out;
+}
 .pages-right-enter-active {
   animation: bounce-right .3s ease-in;
 }
@@ -795,6 +806,14 @@
   .TsDiv2 img{
     margin-bottom: -3px;
     margin-right: 10px
+  }
+  .tree-wrapper {
+    position: absolute;
+    width: 350px;
+    right: 0;
+    top:35px;
+    bottom:0;
+    overflow: auto;
   }
   .cutPictureBox{
     position: fixed;
