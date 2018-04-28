@@ -24,16 +24,13 @@
           <div class="showTextArea" v-show="showTextArea">
             <pre>{{showTextAreaContent}}</pre>
           </div>
-          <!-- <iframe
+          <iframe
             v-show="!showTextArea"
             id="pdfjs"
             ref="pdfjs"
-            :src= "pdfUrl"
+            :src= "this.pdfUrl"
             frameborder="0" style="width:100%;height:100%">
-          </iframe> -->
-          <div ref="pdfWrapper" class="pdf-wrapper">
-            <img ref="pdfimg" src="../../../static/pdfs/test.jpg" alt="">
-          </div>
+          </iframe>
           <div class="evidGuide" v-if="($route.query.type + '') !== '1'" :class="[{evidGuideFold: !evidExpand}, {'allPast': zjzyBtzth === 0 && ($route.query.type + '') === '3'},{'somePast': zjzyBtzth === 1 && ($route.query.type + '') === '3'},{'noPast': zjzyBtzth === 2 && ($route.query.type + '') === '3'}, {success: ($route.query.type + '') === '2'}]">
           </div>
         </div>
@@ -293,6 +290,9 @@
       ...pdf.mapMutations(['UPDATE_PREARROW', 'UPDATE_NEXTARROW', 'UPDATE_SHOWCLFZDATA', 'UPDATE_ISCUTPICTURE', 'UPDATE_CLZTINDEX', 'SET_ISLOAD']),
       ...ptzjsc.mapMutations(['UPDATEEVIDEXPAND']),
       ...vuex.mapMutations(['UPDATE_CURNODE', 'UPDATE_PDFURL']),
+      showdzqz (e) {
+        this.sdzqz = e
+      },
       viewFind () {
         document.getElementById('pdfjs').contentWindow.viewFind()
       },
@@ -300,60 +300,19 @@
         this.sdzqz = false
       },
       zoomOut () {
-        // document.getElementById('pdfjs').contentWindow.toolbar()
-        if (this.scaleIndex <= 0) {
-          return
-        }
-        this.scaleIndex = this.scaleIndex - 1
-        // this.$refs.pdfimg.style.transform = `scale(${this.scale[this.scaleIndex]})`
-        this._scale()
-        this.$refs.pdftitle.changeSelect(this.scaleIndex + 4)
-      },
-      showdzqz (e) {
-        this.sdzqz = e
+        document.getElementById('pdfjs').contentWindow.toolbar()
       },
       zoomIn () {
-        // document.getElementById('pdfjs').contentWindow.zoomIn()
-        if (this.scaleIndex >= this.scale.length - 1) {
-          return
-        }
-        this.scaleIndex = this.scaleIndex + 1
-        // this.$refs.pdfimg.style.transform = `scale(${this.scale[this.scaleIndex]})`
-        this._scale()
-        this.$refs.pdftitle.changeSelect(this.scaleIndex + 4)
+        document.getElementById('pdfjs').contentWindow.zoomIn()
       },
       pageRotateCw () {
-        this.rotate = this.rotate + 90
-        this.$refs.pdfimg.style.transform = `rotate(${this.rotate}deg)`
+        document.getElementById('pdfjs').contentWindow.pageRotateCw()
       },
       pageRotateCcw () {
-        this.rotate = this.rotate - 90
-        this.$refs.pdfimg.style.transform = `rotate(${this.rotate}deg)`
+        document.getElementById('pdfjs').contentWindow.pageRotateCcw()
       },
       scaleSelect (data) {
-        let index = this.scale.findIndex(i => {
-          return i === data
-        })
-        if (index === -1) {
-          if (data === 'page-actual') {
-            let w = this.$refs.pdfimg.naturalWidth + 'px'
-            this._scale(w)
-          } else {
-            this._scale(data)
-          }
-        } else {
-          this.scaleIndex = index
-          this._scale()
-        }
-      },
-      _scale (data) {
-        if (data) {
-          this.$refs.pdfimg.style.width = data
-        } else {
-          this.$refs.pdfimg.style.width = this.scale[this.scaleIndex]
-        }
-        this.$refs.pdfWrapper.style.scrollTop = 0
-        this.$refs.pdfWrapper.style.scrollLeft = 0
+        document.getElementById('pdfjs').contentWindow.scaleSelect(data)
       },
       zjwbClick (data) {
         this.showTextArea = true
