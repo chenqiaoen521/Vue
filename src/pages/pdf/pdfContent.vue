@@ -1,7 +1,7 @@
 <template>
   <div class="pdf">
     <div class="pdf-content">
-      <pdfTitle ref="pdftitle" @showdzqz=showdzqz @cutPicture="cutPicture" @Move="Move" @viewFind="viewFind" @zoomOut="zoomOut" @zoomIn="zoomIn" 
+      <pdfTitle :showdzqz="sdzqz" ref="pdftitle" @showdzqz=showdzqz @cutPicture="cutPicture" @Move="Move" @viewFind="viewFind" @zoomOut="zoomOut" @zoomIn="zoomIn" 
         @pageRotateCw="pageRotateCw" @pageRotateCcw="pageRotateCcw" @scaleSelect="scaleSelect" @zjwbClick="zjwbClick"
         @shibie="shibie"></pdfTitle>
       <div class="left-content">
@@ -17,7 +17,7 @@
         </transition>
         </div>
         
-        <div class="pdfContent" :class="{isIllegal: illegal === true}">
+        <div class="pdfContent" @click="maskdown" :class="{isIllegal: illegal === true}">
           <div class="returnBtn_con" @click="returnClick" v-show="returnBtnShow">
             <span class="returnBtn"></span>
           </div>
@@ -35,12 +35,12 @@
             <img ref="pdfimg" src="../../../static/pdfs/test.jpg" alt="">
           </div>
           <div class="evidGuide" v-if="($route.query.type + '') !== '1'" :class="[{evidGuideFold: !evidExpand}, {'allPast': zjzyBtzth === 0 && ($route.query.type + '') === '3'},{'somePast': zjzyBtzth === 1 && ($route.query.type + '') === '3'},{'noPast': zjzyBtzth === 2 && ($route.query.type + '') === '3'}, {success: ($route.query.type + '') === '2'}]">
-        </div>
+          </div>
         </div>
         <loading v-show="isload"></loading>
       </div>
       <transition name="jzTreetran">
-        <div class="tree-wrapper">
+        <div v-show="sdzqz" class="tree-wrapper">
           <jz-tree></jz-tree>
         </div>
       </transition>
@@ -117,7 +117,6 @@
       var self = this
       window.addEventListener('loadComplete', () => {
         this.SET_ISLOAD(false)
-        console.log('loadComplete')
       })
       window.addEventListener('tishi', function (data) {
         if (data.detail.result) {
@@ -296,6 +295,9 @@
       ...vuex.mapMutations(['UPDATE_CURNODE', 'UPDATE_PDFURL']),
       viewFind () {
         document.getElementById('pdfjs').contentWindow.viewFind()
+      },
+      maskdown () {
+        this.sdzqz = false
       },
       zoomOut () {
         // document.getElementById('pdfjs').contentWindow.toolbar()
@@ -810,7 +812,7 @@
   .tree-wrapper {
     position: absolute;
     width: 350px;
-    right: 0;
+    right: 0px;
     top:35px;
     bottom:0;
     overflow: auto;

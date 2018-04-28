@@ -46,11 +46,15 @@
 <script>
 export default{
   name: 'pdfTitle',
-  props: ['treeData'],
+  props: {
+    showdzqz: {
+      type: Boolean,
+      default: false
+    }
+  },
   data () {
     return {
       active: -1,
-      showdzqz: false,
       showTextArea: false,
       isShowStuffTips: false, // 非法证据
       isShowRelateTips: false, // 关联证据

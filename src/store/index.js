@@ -6,19 +6,9 @@ import demo from './modules/demo'
 import pdf from './modules/pdf'
 import ptzjsc from './modules/ptzjsc'
 import socketDemo from './modules/socket_io_demo'
+import creatLogger from 'vuex/dist/logger'
 Vue.use(Vuex)
-
-export const mutations = {
-}
-
-export const actions = {
-}
-
-export const getters = {
-}
-
-Vue.use(Vuex)
-
+const debug = process.env.NODE_ENV !== 'production'
 export function createStore () {
   return new Vuex.Store({
     modules: {
@@ -27,6 +17,7 @@ export function createStore () {
       pdf,
       ptzjsc // 普通模式的证据审查
     },
+    plugins: debug ? [creatLogger(), createPersistedState()] : [createPersistedState()],
     state: {
       // bmsah: '山东省院起诉受[2018]37000000003号',
       bmsah: '山东省院起诉受[2017]37000000095号',
@@ -42,8 +33,6 @@ export function createStore () {
       rightCurNode: null,
       curNode: null
     },
-    plugins: [createPersistedState()],
-    actions,
     mutations: {
       [types.UPDATE_CURNODE]  (state, data) {
         state.curNode = data
@@ -78,7 +67,6 @@ export function createStore () {
       [types.SET_RIGHTCURNODE] (state, lcjdbh) {
         state.rightCurNode = lcjdbh
       }
-    },
-    getters
+    }
   })
 }

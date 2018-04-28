@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+  html,body{
+    width: 100%;
+    height: 100%;
+
+  }
+  *{
+    margin:0;
+    padding:0;
+  }
+	canvas {
+		border: 1px solid red;
+    margin-left: 100px;
+    margin-top:50px;
+	}
+	</style>
+</head>
+<body>
+	<canvas width="500" height="500" id="canvas"></canvas>
+	<script>
+  	var canvas = document.getElementById('canvas');
+    var ctx = canvas.getContext('2d');
+    var img = new Image();
+    img.src = 'src/pages/pdf/loading.gif';
+    img.onload = function () {
+      var pattern = ctx.createPattern(this, 'repeat');
+      //ctx.fillStyle = pattern;
+      //ctx.fillRect(0, 0, 500, 500);
+      ctx.font = 'bold 40px Arial';
+      ctx.fillStyle = pattern;
+      ctx.fillText('欢迎大家学习《canvas 绘图接口详解》！', 40, 40, 400);
+      ctx.font = 'bold 40px Arial';
+      ctx.strokeStyle = '#058';
+      ctx.strokeText('欢迎大家学习《canvas 绘图接口详解》！', 40, 100, 400);
+    }
+    var linearGrad = ctx.createLinearGradient(0, 0, 500, 500);
+    linearGrad.addColorStop(0.0, '#fff');  
+    linearGrad.addColorStop(1.0, '#000');
+    ctx.fillStyle = linearGrad;
+    ctx.fillRect(0, 0, 500, 500); 
+	</script>
+</body>
+</html>

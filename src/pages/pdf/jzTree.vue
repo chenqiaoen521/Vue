@@ -24,7 +24,8 @@ const ptzjsc = vuex.createNamespacedHelpers('ptzjsc')
 export default {
   name: 'jzTree',
   mounted () {
-    // this.getJzTreeData()
+    console.log(this.jztreeData)
+    this.getJzTreeData()
     this.$eventbus.on('nextPage', (data) => {
       if (data < 1 && this.$refs.jzTree) {
         let mark = 'id'
@@ -251,8 +252,10 @@ export default {
 </script>
 <style scoped>
 .jztree{
-  height: calc(100% - 34px);
+  height: calc(100% - 1px);
   background-color: #fff;
+  border-bottom: 1px solid #ddd;
+  border-left: 1px solid #ddd;
 }
 .js-input{
   width: 80%;
