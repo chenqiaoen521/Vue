@@ -28,7 +28,7 @@
             v-show="!showTextArea"
             id="pdfjs"
             ref="pdfjs"
-            :src= "this.pdfUrl"
+            :src= "srcpdf"
             frameborder="0" style="width:100%;height:100%">
           </iframe>
           <div class="evidGuide" v-if="($route.query.type + '') !== '1'" :class="[{evidGuideFold: !evidExpand}, {'allPast': zjzyBtzth === 0 && ($route.query.type + '') === '3'},{'somePast': zjzyBtzth === 1 && ($route.query.type + '') === '3'},{'noPast': zjzyBtzth === 2 && ($route.query.type + '') === '3'}, {success: ($route.query.type + '') === '2'}]">
@@ -63,6 +63,7 @@
     components: {pdfTitle, jzTree, loading},
     data () {
       return {
+        srcpdf: './static/pdfjs/web/viewer.html',
         showTextArea: false,
         // showTextAreaContent: null,
         tabss: [

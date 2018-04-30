@@ -1,99 +1,7 @@
-<!DOCTYPE html>
-<!--
-Copyright 2012 Mozilla Foundation
+<template>
+  <div  id="appContainer"  >
+    <div id="outerContainer">
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-
-Adobe CMap resources are covered by their own copyright but the same license:
-
-    Copyright 1990-2015 Adobe Systems Incorporated.
-
-See https://github.com/adobe-type-tools/cmap-resources
--->
-<html dir="ltr" mozdisallowselectionprint moznomarginboxes>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="google" content="notranslate">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>PDF.js viewer</title>
-
-
-  <link rel="stylesheet" href="./viewer.css">
-  <link rel="stylesheet" href="./jstree/themes/default/style.min.css" />
-  <script src="./compatibility.js"></script>
-
-
-
-  <!-- This snippet is used in production (included from viewer.html) -->
-  <link rel="resource" type="application/l10n" href="./locale/locale.properties">
-  <script src="./l10n.js"></script>
-  <script src="../build/pdf.js"></script>
-  <script src="./viewer.js"></script>
-</head>
-
-<body tabindex="1" class="loadingInProgress">
-  <div class="pdf-title">
-    <ul class="pdfTitle" >
-      <li title="缩小"  class="pdfBR">
-        <div id="zoomOut" class="pdfwrapper active"><img src="./images/jian.png"></div>
-      </li>
-      <li title="放大" >
-        <div id="zoomIn" class="pdfwrapper active"><img src="./images/jia.png"></div>
-      </li>
-      <li>
-         <span id="scaleSelectContainer" >
-        <div class="pdfwrapper" style="margin:0 0 0 10px;" title="自动缩放">
-          <select id="scaleSelect"  class="autoZoom" title="自动缩放" >
-            <option id="pageAutoOption" title="" value="auto" selected="selected" >自动缩放</option>
-            <option id="pageActualOption" title="" value="page-actual" >实际大小</option>
-            <option id="pageFitOption" title="" value="page-fit">适合页面</option>
-            <option id="pageWidthOption" title="" value="page-width" >适合页宽</option>
-            <option title="" value="0.5">50%</option>
-            <option title="" value="0.75">75%</option>
-            <option title="" value="1">100%</option>
-            <option title="" value="1.25">125%</option>
-            <option title="" value="1.5">150%</option>
-            <option title="" value="2">200%</option>
-            <option title="" value="3">300%</option>
-            <option title="" value="4">400%</option>
-          </select>
-        </span>
-        </div>
-      </li>
-      <li class="pdfBR" title="顺时针旋转" >
-        <div id="pageRotateCw" class="pdfwrapper active" ><img src="./images/xuanzhuan.png"></div>
-      </li>
-      <li class="pdfBR" title="逆时针旋转" >
-        <div  id="pageRotateCcw" class="pdfwrapper active"><img src="./images/xuanzhuan1.png"></div>
-      </li>
-      <li class="pdfBR" title="移动">
-        <div class="pdfwrapper active"><img src="./images/yidong.png"></div>
-      </li>
-    </ul>
-    <div class="right-title" id="dzjz">
-      <i class="icon1"></i>电子卷宗
-    </div>
-  </div>
-  
-<div id="outerContainer">
-  <div id="pdfsliderout" class="pdf-sliderout">
-    <div class="inputjstree">
-      <input type="text" id="jstreeSearch" placeholder="请输入关键字进行检索" />
-      <i class="search-icon"></i>
-    </div>
-      <div id="jstree"></div>
-    </div>
   <div id="sidebarContainer">
     <div id="toolbarSidebar">
       <div class="splitToolbarButton toggled">
@@ -237,7 +145,7 @@ See https://github.com/adobe-type-tools/cmap-resources
               <!--<span data-l10n-id="last_page_label">Go to Last Page</span>-->
             </button>
             <div class="verticalToolbarSeparator hiddenSmallView"></div>
-            <button  style="min-width: inherit;margin-top: 4px;" class="secondaryToolbarButton rotateCw" title="Rotate Clockwise" tabindex="58" data-l10n-id="page_rotate_cw">
+            <button id="pageRotateCw" style="min-width: inherit;margin-top: 4px;" class="secondaryToolbarButton rotateCw" title="Rotate Clockwise" tabindex="58" data-l10n-id="page_rotate_cw">
               <!--<span data-l10n-id="page_rotate_cw_label">Rotate Clockwise</span>-->
             </button>
             <div class="verticalToolbarSeparator hiddenSmallView"></div>
@@ -269,16 +177,16 @@ See https://github.com/adobe-type-tools/cmap-resources
           </div>
           <div id="toolbarViewerMiddle">
             <div class="splitToolbarButton">
-              <button class="toolbarButton zoomOut" title="Zoom Out" tabindex="21" data-l10n-id="zoom_out">
+              <button id="zoomOut" class="toolbarButton zoomOut" title="Zoom Out" tabindex="21" data-l10n-id="zoom_out">
                 <span data-l10n-id="zoom_out_label">Zoom Out</span>
               </button>
               <div class="splitToolbarButtonSeparator"></div>
-              <button  class="toolbarButton zoomIn" title="Zoom In" tabindex="22" data-l10n-id="zoom_in">
+              <button id="zoomIn" class="toolbarButton zoomIn" title="Zoom In" tabindex="22" data-l10n-id="zoom_in">
                 <span data-l10n-id="zoom_in_label">Zoom In</span>
               </button>
             </div>
-                <span id="" class="dropdownToolbarButton">
-                  <!--<select id="scaleSelect" title="Zoom" tabindex="23" data-l10n-id="zoom">
+                <span id="scaleSelectContainer" class="dropdownToolbarButton">
+                  <select id="scaleSelect" title="Zoom" tabindex="23" data-l10n-id="zoom">
                     <option id="pageAutoOption" title="" value="auto" selected="selected" data-l10n-id="page_scale_auto">Automatic Zoom</option>
                     <option id="pageActualOption" title="" value="page-actual" data-l10n-id="page_scale_actual">Actual Size</option>
                     <option id="pageFitOption" title="" value="page-fit" data-l10n-id="page_scale_fit">Fit Page</option>
@@ -292,7 +200,7 @@ See https://github.com/adobe-type-tools/cmap-resources
                     <option title="" value="2" data-l10n-id="page_scale_percent" data-l10n-args='{ "scale": 200 }'>200%</option>
                     <option title="" value="3" data-l10n-id="page_scale_percent" data-l10n-args='{ "scale": 300 }'>300%</option>
                     <option title="" value="4" data-l10n-id="page_scale_percent" data-l10n-args='{ "scale": 400 }'>400%</option>
-                  </select>-->
+                  </select>
                 </span>
           </div>
         </div>
@@ -429,45 +337,16 @@ See https://github.com/adobe-type-tools/cmap-resources
 
 </div> <!-- outerContainer -->
 <div id="printContainer"></div>
-<input type="file" id="myfile" style="position:absolute;top:100px;" />
-<script src="./jquery.min.js"></script>
-<script src="./jstree/jstree.min.js"></script>
-<script>
-  $('#jstree').jstree({
-    plugins: ["types","search"],
-    'core': {
-      'data': [
-        { 
-          "text" : "Root node",
-          "icon": "./jstree/themes/default/textword.png",
-          "children" : [
-            { "text" : "Child node 1","icon": "./jstree/themes/default/text.png"},
-            { "text" : "Child node 2","icon": "./jstree/themes/default/text.png"}
-          ]
-        }
-      ]
-    }
-  });
-  
-  var jstreeSearch = $('#jstreeSearch');
-  jstreeSearch.keyup(debounce(function(){
-    
-    var v = jstreeSearch.val();
-    $('#jstree').jstree(true).search(v);
-  }));
-  
-  function debounce (callback) {
-    var timer;
-    return function () {
-      if (timer) {
-        clearTimeout(timer);
-      }
-        timer = setTimeout(function(){
-        callback()
-      },200);
-    }
-  }
+<input type="file" name="fileInput" id="myfile" style="position:absolute;top:0;" />
+  </div>
+</template>
+<script type="text/javascript">
+export default {
+}
 </script>
-</body>
-</html>
-
+<style type="text/css" scoped>
+	.loadingInProgress{
+	  width:100%;
+	  height: 100%;
+	}
+</style>
