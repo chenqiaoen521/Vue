@@ -1069,7 +1069,7 @@ var pdfjsWebLibs;
    var DEFAULT_SCALE_VALUE = 'auto';
    var DEFAULT_SCALE = 1.0;
    var MIN_SCALE = 0.25;
-   var MAX_SCALE = 10.0;
+   var MAX_SCALE = 4.0;
    var UNKNOWN_SCALE = 0;
    var MAX_AUTO_SCALE = 1.25;
    var SCROLLBAR_PADDING = 40;
@@ -5893,6 +5893,15 @@ var pdfjsWebLibs;
       newScale = Math.min(MAX_SCALE, newScale);
      } while (--ticks > 0 && newScale < MAX_SCALE);
      this.pdfViewer.currentScaleValue = newScale;
+     this.setOptions(newScale);
+    },
+    setOptions (val) {
+      var options = document.getElementById('scaleSelect').options;
+      for (var i = 0; i< options.length;i++) {
+        if (options[i].value == val) {
+          options[i].selected = true
+        }
+      }
     },
     zoomOut: function pdfViewZoomOut(ticks) {
      var newScale = this.pdfViewer.currentScale;
@@ -5902,6 +5911,7 @@ var pdfjsWebLibs;
       newScale = Math.max(MIN_SCALE, newScale);
      } while (--ticks > 0 && newScale > MIN_SCALE);
      this.pdfViewer.currentScaleValue = newScale;
+     this.setOptions(newScale);
     },
     get pagesCount() {
      return this.pdfDocument ? this.pdfDocument.numPages : 0;
@@ -7733,8 +7743,6 @@ function domslider () {
     document.getElementById('outerContainer').addEventListener('click',function(){
       if (slider.classList.contains('addslideranimation')) {
         slider.classList.remove('addslideranimation');
-      } else {
-        slider.classList.add('addslideranimation');
       }
     },false);
     
