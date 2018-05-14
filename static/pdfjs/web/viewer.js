@@ -6410,7 +6410,6 @@ var pdfjsWebLibs;
     },
     bindEvents: function pdfViewBindEvents() {
      var eventBus = this.eventBus;
-     console.log(eventBus)
      eventBus.on('resize', webViewerResize);
      eventBus.on('hashchange', webViewerHashchange);
      eventBus.on('beforeprint', this.beforePrint.bind(this));
@@ -6775,6 +6774,17 @@ var pdfjsWebLibs;
      fileReader.readAsArrayBuffer(file);
     }
     PDFViewerApplication.setTitleUsingUrl(file.name);
+    var appConfig = PDFViewerApplication.appConfig;
+    appConfig.toolbar.viewBookmark.setAttribute('hidden', 'true');
+    appConfig.secondaryToolbar.viewBookmarkButton.setAttribute('hidden', 'true');
+    appConfig.toolbar.download.setAttribute('hidden', 'true');
+    appConfig.secondaryToolbar.downloadButton.setAttribute('hidden', 'true');
+   };
+
+   window.fileuploader = function fileuploader(buffer) {
+    var u8a =new Uint8Array(buffer);
+     PDFViewerApplication.open(u8a);
+    //PDFViewerApplication.setTitleUsingUrl(file.name);
     var appConfig = PDFViewerApplication.appConfig;
     appConfig.toolbar.viewBookmark.setAttribute('hidden', 'true');
     appConfig.secondaryToolbar.viewBookmarkButton.setAttribute('hidden', 'true');

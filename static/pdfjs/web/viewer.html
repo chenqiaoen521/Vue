@@ -433,6 +433,10 @@ See https://github.com/adobe-type-tools/cmap-resources
 <script src="./jquery.min.js"></script>
 <script src="./jstree/jstree.min.js"></script>
 <script>
+$('#myfile2').change(function (e) {
+  console.log(e)
+  webViewerFileInputChange(e.target)
+});
   $('#jstree').jstree({
     plugins: ["types","search"],
     'core': {
